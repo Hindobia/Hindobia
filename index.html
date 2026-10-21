@@ -203,6 +203,28 @@
         .modal-content { background: var(--bg-surface); color: var(--text-main); border-radius: 20px; border: 2px solid var(--gold-accent); padding: 2.5rem; width: 100%; max-width: 550px; box-shadow: 0 25px 60px rgba(0,0,0,0.3); position: relative; }
         .modal-close { position: absolute; top: 15px; left: 15px; background: none; border: none; font-size: 1.2rem; color: var(--text-main); cursor: pointer; z-index: 10; }
 
+        /* تعديل زر موافق أو X في الرسائل المنبثقة ليكون متوهجاً ومتناسباً مع الثيم الفعال */
+        .modal-btn-glow {
+            background: var(--bg-surface);
+            color: var(--text-main);
+            border: 2px solid var(--gold-accent);
+            padding: 10px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            font-weight: 700;
+            box-shadow: 0 0 15px var(--gold-accent), inset 0 0 10px rgba(214, 183, 121, 0.3);
+            transition: var(--transition);
+            animation: glowingBadge 3s ease-in-out infinite alternate;
+        }
+        .modal-btn-glow:hover {
+            background: var(--gold-accent);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px var(--gold-accent);
+        }
+
         .themes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
         .theme-card-option { background: var(--bg-card); border: 1px solid var(--border-soft); border-radius: 14px; padding: 1rem; text-align: center; cursor: pointer; transition: var(--transition); }
         .theme-card-option:hover { border-color: var(--gold-accent); transform: translateY(-3px); }
@@ -210,7 +232,7 @@
         footer { background: var(--bg-surface); border-top: 1px solid var(--border-soft); padding: 40px 5% 20px; text-align: center; position: relative; z-index: 2; }
         .copyright-text { color: var(--text-main); font-size: 0.95rem; font-weight: 600; line-height: 1.8; }
 
-        /* رمز واتساب العائم المتوهج */
+        /* رمز واتساب العائم المتوهج مع تأثيرات تفاعلية */
         .whatsapp-float {
             position: fixed;
             bottom: 25px;
@@ -224,22 +246,26 @@
             align-items: center;
             justify-content: center;
             font-size: 2rem;
-            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.5);
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.5), 0 0 15px #25D366;
             z-index: 1500;
             cursor: pointer;
             transition: var(--transition);
-            animation: pulseWhatsapp 2s infinite;
+            animation: pulseWhatsapp 2s infinite, glowingWhatsapp 3s ease-in-out infinite alternate;
         }
         .whatsapp-float:hover {
-            transform: scale(1.1);
+            transform: scale(1.15) rotate(10deg);
         }
         @keyframes pulseWhatsapp {
             0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
             70% { box-shadow: 0 0 0 20px rgba(37, 211, 102, 0); }
             100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
         }
+        @keyframes glowingWhatsapp {
+            0% { filter: drop-shadow(0 0 5px #25D366); }
+            100% { filter: drop-shadow(0 0 20px #25D366); }
+        }
 
-        /* استجابة الموبايل مع إضافة أيقونات المظهر واللغة والتحكم بالبرغر */
+        /* استجابة الموبايل مع إظهار أزرار المظهر واللغة ولوحة التحكم داخل البرغر */
         @media (max-width: 900px) { 
             .hero { flex-direction: column; text-align: center; padding-top: 110px; } 
             .menu-toggle { display: block; }
@@ -247,7 +273,7 @@
             nav.active { display: block; }
             nav ul { flex-direction: column; gap: 1rem; align-items: flex-start; }
             
-            .header-actions { display: none; } /* إخفاء الأزرار العلوية الصغيرة في الجوال لتكون داخل البرغر */
+            .header-actions { display: none; } 
             .mobile-extra-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 1rem; width: 100%; border-top: 1px solid var(--border-soft); padding-top: 1rem; }
             .mobile-extra-actions button { width: 100%; justify-content: flex-start; }
         }
@@ -273,7 +299,7 @@
                 <li><a href="#evidence" data-ar="شواهد الأداء" data-en="Evidence" onclick="toggleMobileMenu()">شواهد الأداء</a></li>
                 <li><a href="#tranquility" data-ar="الطمأنينة" data-en="Tranquility" onclick="toggleMobileMenu()">الطمأنينة</a></li>
             </ul>
-            <!-- عناصر وأيقونات إضافية تظهر داخل قائمة البرغر للجوال -->
+            <!-- عناصر وأيقونات إضافية تظهر حصرياً داخل قائمة البرغر للجوال -->
             <div class="mobile-extra-actions">
                 <button class="btn-action btn-lang" onclick="toggleLanguage(); toggleMobileMenu();"><i class="fa-solid fa-globe"></i> <span id="langBtnTextMobile">ENGLISH</span></button>
                 <button class="btn-action" onclick="openThemeModal(); toggleMobileMenu();"><i class="fa-solid fa-palette" style="color: var(--gold-accent);"></i> <span data-ar="المظهر" data-en="Theme">المظهر</span></button>
@@ -534,7 +560,7 @@
             <div style="font-size: 2rem; color: var(--gold-accent); margin-bottom: 1rem;"><i class="fa-solid fa-circle-info"></i></div>
             <h3 id="customModalTitle" style="font-family: var(--font-title); font-size: 1.5rem; font-weight: 700; margin-bottom: 10px;">تنبيه</h3>
             <p id="customModalBody" style="font-size: 1rem; margin-bottom: 1.5rem; line-height: 1.8;">النص هنا</p>
-            <button class="btn-primary" style="margin: 0 auto; justify-content: center; min-width: 120px;" onclick="closeCustomModal()">موافق</button>
+            <button class="modal-btn-glow" onclick="closeCustomModal()">موافق</button>
         </div>
     </div>
 
@@ -580,7 +606,7 @@
                 <input type="email" id="adminEmailInput" placeholder="البريد الإلكتروني" value="T165922@asrg.moe.gov.sa" style="width:100%; padding:10px; margin-bottom:10px; border-radius:10px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);">
                 <input type="password" id="adminPassInput" placeholder="كلمة المرور" style="width:100%; padding:10px; margin-bottom:1rem; border-radius:10px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);">
                 
-                <button class="btn-primary" style="width: 100%; justify-content: center;" onclick="verifyAdminPass()" data-ar="دخول اللوحة" data-en="Login">دخول اللوحة</button>
+                <button class="modal-btn-glow" style="width: 100%; text-align: center;" onclick="verifyAdminPass()" data-ar="دخول اللوحة" data-en="Login">دخول اللوحة</button>
             </div>
 
             <div id="adminControlStep" style="display: none;">
@@ -620,7 +646,7 @@
                 <div style="margin-bottom: 8px;"><label style="font-size:0.75rem;">10. تهيئة البيئة التعليمية:</label><input type="text" id="evidence10" style="width:100%; padding:5px; border-radius:5px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);"></div>
                 <div style="margin-bottom: 8px;"><label style="font-size:0.75rem;">11. توظيف التقنيات ووسائل التعلم:</label><input type="text" id="evidence11" style="width:100%; padding:5px; border-radius:5px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);"></div>
 
-                <button class="btn-card-link" style="background:var(--gold-accent); color:#fff; width:100%; justify-content:center; margin-top:15px;" onclick="saveAdminSettings()" data-ar="حفظ وتزامن كافة التعديلات" data-en="Save All Changes">حفظ وتزامن كافة التعديلات</button>
+                <button class="modal-btn-glow" style="width:100%; text-align:center; margin-top:15px;" onclick="saveAdminSettings()" data-ar="حفظ وتزامن كافة التعديلات" data-en="Save All Changes">حفظ وتزامن كافة التعديلات</button>
             </div>
         </div>
     </div>
@@ -783,10 +809,14 @@
         }
 
         function openWhatsappWithSignature() {
-            showCustomModal("Designed by Vanta Voids", "جاري تحويلك إلى محادثة واتساب مع المصمم ...");
-            setTimeout(() => {
-                window.open("https://wa.me/966565588869", "_blank");
-            }, 1200);
+            showCustomModal("Designed by Vanta Voids", "جاري تحويلك إلى محادثة واتساب عبر الرقم +966565588869 ...");
+            const confirmBtn = document.querySelector('#customModal .modal-btn-glow');
+            if(confirmBtn) {
+                confirmBtn.onclick = function() {
+                    closeCustomModal();
+                    window.open("https://wa.me/966565588869", "_blank");
+                };
+            }
         }
 
         function openAdminModal() { 
@@ -806,7 +836,6 @@
                     document.getElementById('adminLoginStep').style.display = 'none';
                     document.getElementById('adminControlStep').style.display = 'block';
                     
-                    // تعبئة حقول لوحة التحكم بالبيانات الحالية
                     document.getElementById('newEvidencePass').value = appState.evidencePass;
                     if(appState.links) {
                         document.getElementById('linkQuran').value = appState.links.quran || '';
