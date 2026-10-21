@@ -131,8 +131,6 @@
 
         .hero-title { font-family: var(--font-title); font-size: 2.8rem; font-weight: 700; color: var(--text-main); line-height: 1.2; margin-bottom: 1.2rem; }
         .hero-desc { font-size: 1.15rem; color: var(--text-muted); margin-bottom: 2rem; font-style: italic; line-height: 1.9; }
-        
-        /* تم إزالة الأزرار الزائدة هنا لتصبح نظيفة كما طلبتِ */
 
         .hero-3d-wrapper { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; z-index: 2; height: 450px; perspective: 1000px; }
         .realistic-shell { width: 280px; height: 260px; position: relative; cursor: pointer; transform-style: preserve-3d; transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -212,7 +210,36 @@
         footer { background: var(--bg-surface); border-top: 1px solid var(--border-soft); padding: 40px 5% 20px; text-align: center; position: relative; z-index: 2; }
         .copyright-text { color: var(--text-main); font-size: 0.95rem; font-weight: 600; line-height: 1.8; }
 
-        /* استجابة الموبايل مع إضافة الأزرار داخل قائمة البرغر */
+        /* رمز واتساب العائم المتوهج */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 25px;
+            left: 25px;
+            background: #25D366;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.5);
+            z-index: 1500;
+            cursor: pointer;
+            transition: var(--transition);
+            animation: pulseWhatsapp 2s infinite;
+        }
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+        }
+        @keyframes pulseWhatsapp {
+            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(37, 211, 102, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+        }
+
+        /* استجابة الموبايل مع إضافة أيقونات المظهر واللغة والتحكم بالبرغر */
         @media (max-width: 900px) { 
             .hero { flex-direction: column; text-align: center; padding-top: 110px; } 
             .menu-toggle { display: block; }
@@ -220,10 +247,9 @@
             nav.active { display: block; }
             nav ul { flex-direction: column; gap: 1rem; align-items: flex-start; }
             
-            /* إخفاء الأزرار المكررة من الهيدر العلوي في الجوال لعرضها داخل القائمة مرتبة */
-            .header-actions .btn-action:not(.btn-lang) { display: none; }
-            .mobile-extra-actions { display: flex; gap: 10px; margin-top: 1rem; width: 100%; border-top: 1px solid var(--border-soft); padding-top: 1rem; }
-            .mobile-extra-actions button { flex: 1; justify-content: center; }
+            .header-actions { display: none; } /* إخفاء الأزرار العلوية الصغيرة في الجوال لتكون داخل البرغر */
+            .mobile-extra-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 1rem; width: 100%; border-top: 1px solid var(--border-soft); padding-top: 1rem; }
+            .mobile-extra-actions button { width: 100%; justify-content: flex-start; }
         }
         .mobile-extra-actions { display: none; }
     </style>
@@ -247,8 +273,9 @@
                 <li><a href="#evidence" data-ar="شواهد الأداء" data-en="Evidence" onclick="toggleMobileMenu()">شواهد الأداء</a></li>
                 <li><a href="#tranquility" data-ar="الطمأنينة" data-en="Tranquility" onclick="toggleMobileMenu()">الطمأنينة</a></li>
             </ul>
-            <!-- عناصر إضافية تظهر حصرياً داخل قائمة الهواتف المحمولة -->
+            <!-- عناصر وأيقونات إضافية تظهر داخل قائمة البرغر للجوال -->
             <div class="mobile-extra-actions">
+                <button class="btn-action btn-lang" onclick="toggleLanguage(); toggleMobileMenu();"><i class="fa-solid fa-globe"></i> <span id="langBtnTextMobile">ENGLISH</span></button>
                 <button class="btn-action" onclick="openThemeModal(); toggleMobileMenu();"><i class="fa-solid fa-palette" style="color: var(--gold-accent);"></i> <span data-ar="المظهر" data-en="Theme">المظهر</span></button>
                 <button class="btn-action" onclick="openAdminModal(); toggleMobileMenu();"><i class="fa-solid fa-lock"></i> <span data-ar="لوحة التحكم" data-en="Admin">لوحة التحكم</span></button>
             </div>
@@ -495,6 +522,11 @@
         </div>
     </section>
 
+    <!-- رمز واتساب العائم المتوهج -->
+    <div class="whatsapp-float" onclick="openWhatsappWithSignature()" title="Chat on WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i>
+    </div>
+
     <!-- النوافذ المنبثقة -->
     <div class="modal" id="customModal" style="z-index: 3000;">
         <div class="modal-content" style="text-align: center;">
@@ -536,7 +568,7 @@
         </div>
     </div>
 
-    <!-- لوحة التحكم المتطورة والمزودة بإدارة روابط ون دريف والشواهد والمبادرات -->
+    <!-- لوحة التحكم المتطورة لإدارة الروابط ومحاور الشواهد الـ 11 -->
     <div class="modal" id="adminModal">
         <div class="modal-content" style="max-height: 85vh; overflow-y: auto;">
             <button class="modal-close" onclick="closeAdminModal()"><i class="fa-solid fa-xmark"></i></button>
@@ -557,43 +589,38 @@
                 
                 <!-- إعداد كلمة مرور الشواهد -->
                 <div style="margin-bottom: 15px;">
-                    <label style="font-size: 0.85rem; font-weight: 700;" data-ar="كلمة مرور شواهد الأداء الوظيفي:" data-en="Evidence Password:">كلمة مرور شواهد الأداء الوظيفي:</label>
+                    <label style="font-size: 0.85rem; font-weight: 700;" data-ar="كلمة مرور شواهد الأداء الوظيفي العامة:" data-en="Evidence Password:">كلمة مرور شواهد الأداء الوظيفي العامة:</label>
                     <input type="text" id="newEvidencePass" placeholder="كلمة المرور الجديدة" style="width:100%; padding:8px; margin-top:5px; border-radius:8px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);">
                 </div>
 
                 <!-- إعداد روابط المقررات (OneDrive) -->
-                <div style="margin-bottom: 15px;">
-                    <label style="font-size: 0.85rem; font-weight: 700;" data-ar="رابط ون دريف (القرآن الكريم):" data-en="OneDrive (Quran):">رابط ون دريف (القرآن الكريم):</label>
-                    <input type="text" id="linkQuran" placeholder="https://onedrive.live.com/..." style="width:100%; padding:8px; margin-top:5px; border-radius:8px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);">
-                </div>
-                <div style="margin-bottom: 15px;">
-                    <label style="font-size: 0.85rem; font-weight: 700;" data-ar="رابط ون دريف (الدراسات الإسلامية):" data-en="OneDrive (Islamic Studies):">رابط ون دريف (الدراسات الإسلامية):</label>
-                    <input type="text" id="linkIslamic" placeholder="https://onedrive.live.com/..." style="width:100%; padding:8px; margin-top:5px; border-radius:8px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);">
-                </div>
-                <div style="margin-bottom: 15px;">
-                    <label style="font-size: 0.85rem; font-weight: 700;" data-ar="رابط ون دريف (لغتي):" data-en="OneDrive (My Language):">رابط ون دريف (لغتي):</label>
-                    <input type="text" id="linkLugaty" placeholder="https://onedrive.live.com/..." style="width:100%; padding:8px; margin-top:5px; border-radius:8px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);">
-                </div>
-                <div style="margin-bottom: 15px;">
-                    <label style="font-size: 0.85rem; font-weight: 700;" data-ar="رابط ون دريف (التربية البدنية):" data-en="OneDrive (Physical Education):">رابط ون دريف (Physical Education):</label>
-                    <input type="text" id="linkSport" placeholder="https://onedrive.live.com/..." style="width:100%; padding:8px; margin-top:5px; border-radius:8px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);">
-                </div>
+                <h4 style="margin: 15px 0 5px 0; color: var(--gold-accent);" data-ar="روابط المقررات:" data-en="Subjects Links:">روابط المقررات:</h4>
+                <div style="margin-bottom: 10px;"><label style="font-size:0.8rem;">القرآن الكريم:</label><input type="text" id="linkQuran" style="width:100%; padding:6px; border-radius:6px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);"></div>
+                <div style="margin-bottom: 10px;"><label style="font-size:0.8rem;">الدراسات الإسلامية:</label><input type="text" id="linkIslamic" style="width:100%; padding:6px; border-radius:6px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);"></div>
+                <div style="margin-bottom: 10px;"><label style="font-size:0.8rem;">لغتي:</label><input type="text" id="linkLugaty" style="width:100%; padding:6px; border-radius:6px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);"></div>
+                <div style="margin-bottom: 10px;"><label style="font-size:0.8rem;">التربية البدنية:</label><input type="text" id="linkSport" style="width:100%; padding:6px; border-radius:6px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);"></div>
 
-                <!-- إعداد روابط المبادرات التعليمية -->
-                <div style="margin-bottom: 15px;">
-                    <label style="font-size: 0.85rem; font-weight: 700;" data-ar="رابط مبادرة (بستان الطفولة المبدعة):" data-en="Initiative 1 Link:">رابط مبادرة (بستان الطفولة المبدعة):</label>
-                    <input type="text" id="linkInit1" style="width:100%; padding:8px; margin-top:5px; border-radius:8px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);">
-                </div>
-                <div style="margin-bottom: 15px;">
-                    <label style="font-size: 0.85rem; font-weight: 700;" data-ar="رابط مبادرة (حديقة الحكايات الرقمية):" data-en="Initiative 2 Link:">رابط مبادرة (حديقة الحكايات الرقمية):</label>
-                    <input type="text" id="linkInit2" style="width:100%; padding:8px; margin-top:5px; border-radius:8px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);">
-                </div>
-                <div style="margin-bottom: 15px;">
-                    <label style="font-size: 0.85rem; font-weight: 700;" data-ar="رابط مبادرة (جسور التعلم والتمكين):" data-en="Initiative 3 Link:">رابط مبادرة (جسور التعلم والتمكين):</label>
-                    <input type="text" id="linkInit3" style="width:100%; padding:8px; margin-top:5px; border-radius:8px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);">
-                </div>
+                <!-- إعداد روابط المبادرات -->
+                <h4 style="margin: 15px 0 5px 0; color: var(--gold-accent);" data-ar="روابط المبادرات:" data-en="Initiatives Links:">روابط المبادرات:</h4>
+                <div style="margin-bottom: 10px;"><label style="font-size:0.8rem;">بستان الطفولة المبدعة:</label><input type="text" id="linkInit1" style="width:100%; padding:6px; border-radius:6px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);"></div>
+                <div style="margin-bottom: 10px;"><label style="font-size:0.8rem;">حديقة الحكايات الرقمية:</label><input type="text" id="linkInit2" style="width:100%; padding:6px; border-radius:6px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);"></div>
+                <div style="margin-bottom: 10px;"><label style="font-size:0.8rem;">جسور التعلم والتمكين:</label><input type="text" id="linkInit3" style="width:100%; padding:6px; border-radius:6px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);"></div>
 
-                <button class="btn-card-link" style="background:var(--gold-accent); color:#fff; width:100%; justify-content:center; margin-top:10px;" onclick="saveAdminSettings()" data-ar="حفظ وتزامن كافة التعديلات" data-en="Save All Changes">حفظ وتزامن كافة التعديلات</button>
+                <!-- إعداد روابط محاور الشواهد الـ 11 الوظيفية -->
+                <h4 style="margin: 15px 0 5px 0; color: var(--gold-accent);" data-ar="روابط شواهد الأداء (11 محوراً):" data-en="Performance Evidence Links (11 Axes):">روابط شواهد الأداء (11 محوراً):</h4>
+                <div style="margin-bottom: 8px;"><label style="font-size:0.75rem;">1. أداء الواجبات الوظيفية:</label><input type="text" id="evidence1" style="width:100%; padding:5px; border-radius:5px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);"></div>
+                <div style="margin-bottom: 8px;"><label style="font-size:0.75rem;">2. إعداد وتنفيذ خطة التعلم:</label><input type="text" id="evidence2" style="width:100%; padding:5px; border-radius:5px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);"></div>
+                <div style="margin-bottom: 8px;"><label style="font-size:0.75rem;">3. الإدارة الصفية:</label><input type="text" id="evidence3" style="width:100%; padding:5px; border-radius:5px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);"></div>
+                <div style="margin-bottom: 8px;"><label style="font-size:0.75rem;">4. التفاعل مع المجتمع المهني:</label><input type="text" id="evidence4" style="width:100%; padding:5px; border-radius:5px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);"></div>
+                <div style="margin-bottom: 8px;"><label style="font-size:0.75rem;">5. التفاعل مع أولياء الأمور:</label><input type="text" id="evidence5" style="width:100%; padding:5px; border-radius:5px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);"></div>
+                <div style="margin-bottom: 8px;"><label style="font-size:0.75rem;">6. التنوع في استراتيجيات التدريس:</label><input type="text" id="evidence6" style="width:100%; padding:5px; border-radius:5px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);"></div>
+                <div style="margin-bottom: 8px;"><label style="font-size:0.75rem;">7. تحسين نتائج المتعلمين:</label><input type="text" id="evidence7" style="width:100%; padding:5px; border-radius:5px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);"></div>
+                <div style="margin-bottom: 8px;"><label style="font-size:0.75rem;">8. تحليل نتائج المتعلمين وتشخيص مستوياتهم:</label><input type="text" id="evidence8" style="width:100%; padding:5px; border-radius:5px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);"></div>
+                <div style="margin-bottom: 8px;"><label style="font-size:0.75rem;">9. تنوع أساليب التقويم:</label><input type="text" id="evidence9" style="width:100%; padding:5px; border-radius:5px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);"></div>
+                <div style="margin-bottom: 8px;"><label style="font-size:0.75rem;">10. تهيئة البيئة التعليمية:</label><input type="text" id="evidence10" style="width:100%; padding:5px; border-radius:5px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);"></div>
+                <div style="margin-bottom: 8px;"><label style="font-size:0.75rem;">11. توظيف التقنيات ووسائل التعلم:</label><input type="text" id="evidence11" style="width:100%; padding:5px; border-radius:5px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);"></div>
+
+                <button class="btn-card-link" style="background:var(--gold-accent); color:#fff; width:100%; justify-content:center; margin-top:15px;" onclick="saveAdminSettings()" data-ar="حفظ وتزامن كافة التعديلات" data-en="Save All Changes">حفظ وتزامن كافة التعديلات</button>
             </div>
         </div>
     </div>
@@ -629,10 +656,13 @@
                 lugaty: "https://onedrive.live.com/",
                 sport: "https://onedrive.live.com/"
             },
+            evidenceLinks: {
+                1: "", 2: "", 3: "", 4: "", 5: "", 6: "", 7: "", 8: "", 9: "", 10: "", 11: ""
+            },
             initiatives: [
-                { title: "بستان الطفولة المبدعة", desc: "برامج تفاعلية رائدة لإثراء مهارات التفكير الأساسية.", url: "https://schools.madrasati.sa/" },
-                { title: "حديقة الحكايات الرقمية", desc: "تعزيز مهارات القراءة والتلاوة للطفولة المبكرة بأسلوب قصصي.", url: "https://kalemtayeb.com/" },
-                { title: "جسور التعلم والتمكين", desc: "ربط أوراق العمل والدروس الرقمية المتكاملة عبر OneDrive.", url: "https://schools.madrasati.sa/" }
+                { titleAr: "بستان الطفولة المبدعة", titleEn: "Creative Childhood Orchard", descAr: "برامج تفاعلية رائدة لإثراء مهارات التفكير الأساسية.", descEn: "Leading interactive programs to enrich core thinking skills.", url: "https://schools.madrasati.sa/" },
+                { titleAr: "حديقة الحكايات الرقمية", titleEn: "Digital Tales Garden", descAr: "تعزيز مهارات القراءة والتلاوة للطفولة المبكرة بأسلوب قصصي.", descEn: "Enhancing reading and recitation skills through storytelling.", url: "https://kalemtayeb.com/" },
+                { titleAr: "جسور التعلم والتمكين", titleEn: "Learning & Empowerment Bridges", descAr: "ربط أوراق العمل والدروس الرقمية المتكاملة عبر OneDrive.", descEn: "Connecting worksheets and integrated digital lessons via OneDrive.", url: "https://schools.madrasati.sa/" }
             ]
         };
 
@@ -642,6 +672,7 @@
             if (data) {
                 if(data.evidencePass) appState.evidencePass = data.evidencePass;
                 if(data.links) appState.links = data.links;
+                if(data.evidenceLinks) appState.evidenceLinks = data.evidenceLinks;
                 if(data.initiatives) appState.initiatives = data.initiatives;
                 renderInitiatives();
             }
@@ -706,12 +737,14 @@
         function toggleLanguage() {
             currentLang = currentLang === 'ar' ? 'en' : 'ar';
             document.getElementById('langBtnText').innerText = currentLang === 'ar' ? 'ENG' : 'عربي';
+            document.getElementById('langBtnTextMobile').innerText = currentLang === 'ar' ? 'ENGLISH' : 'عربي';
             document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
             document.documentElement.lang = currentLang;
 
             document.querySelectorAll('[data-ar]').forEach(elem => {
                 elem.innerText = currentLang === 'ar' ? elem.getAttribute('data-ar') : elem.getAttribute('data-en');
             });
+            renderInitiatives();
         }
 
         function openThemeModal() { document.getElementById('themeModal').classList.add('active'); }
@@ -724,11 +757,12 @@
         function renderInitiatives() {
             const container = document.getElementById('initiativesContainer');
             container.innerHTML = '';
-            appState.initiatives.forEach((init, idx) => {
+            appState.initiatives.forEach((init) => {
                 const card = document.createElement('div'); card.className = 'card-3d-item';
-                const btnTextAr = currentLang === 'ar' ? 'الانتقال للمبادرة' : 'Go to Initiative';
-                const btnTextEn = currentLang === 'en' ? 'Go to Initiative' : 'الانتقال للمبادرة';
-                card.innerHTML = `<h3 style="font-weight:700;">${init.title}</h3><p style="color:var(--text-muted); font-size:0.85rem; margin:10px 0;">${init.desc}</p><a href="${init.url}" target="_blank" class="btn-card-link" data-ar="الانتقال للمبادرة" data-en="Go to Initiative">${currentLang === 'ar' ? 'الانتقال للمبادرة' : 'Go to Initiative'}</a>`;
+                const title = currentLang === 'ar' ? init.titleAr : init.titleEn;
+                const desc = currentLang === 'ar' ? init.descAr : init.descEn;
+                const btnText = currentLang === 'ar' ? 'الانتقال للمبادرة' : 'Go to Initiative';
+                card.innerHTML = `<h3 style="font-weight:700;">${title}</h3><p style="color:var(--text-muted); font-size:0.85rem; margin:10px 0;">${desc}</p><a href="${init.url}" target="_blank" class="btn-card-link">${btnText}</a>`;
                 container.appendChild(card);
             });
         }
@@ -741,10 +775,18 @@
         function openEvidenceModal(num) {
             const pass = prompt(currentLang === 'ar' ? 'أدخلي كلمة المرور لعرض الشاهد رقم ' + num + ':' : 'Enter password for evidence ' + num + ':');
             if (pass === appState.evidencePass) {
-                showCustomModal(currentLang === 'ar' ? 'تم التحقق بنجاح' : 'Verified Successfully', currentLang === 'ar' ? 'سيتم تحويلك إلى مجلد OneDrive المعتمد لشواهد هذا المحور.' : 'Redirecting to authorized OneDrive folder.');
+                const evidenceUrl = appState.evidenceLinks && appState.evidenceLinks[num] ? appState.evidenceLinks[num] : "https://onedrive.live.com/";
+                window.open(evidenceUrl, '_blank');
             } else if(pass !== null) {
                 showCustomModal(currentLang === 'ar' ? 'خطأ في كلمة المرور' : 'Password Error', currentLang === 'ar' ? 'كلمة المرور غير صحيحة، يرجى المحاولة مرة أخرى.' : 'Incorrect password, please try again.');
             }
+        }
+
+        function openWhatsappWithSignature() {
+            showCustomModal("Designed by Vanta Voids", "جاري تحويلك إلى محادثة واتساب الرسمية مع أ. هند القرني...");
+            setTimeout(() => {
+                window.open("https://wa.me/966565588869", "_blank");
+            }, 1200);
         }
 
         function openAdminModal() { 
@@ -764,7 +806,7 @@
                     document.getElementById('adminLoginStep').style.display = 'none';
                     document.getElementById('adminControlStep').style.display = 'block';
                     
-                    // تعبئة الحقول بالبيانات الحالية
+                    // تعبئة حقول لوحة التحكم بالبيانات الحالية
                     document.getElementById('newEvidencePass').value = appState.evidencePass;
                     if(appState.links) {
                         document.getElementById('linkQuran').value = appState.links.quran || '';
@@ -776,6 +818,11 @@
                         document.getElementById('linkInit1').value = appState.initiatives[0]?.url || '';
                         document.getElementById('linkInit2').value = appState.initiatives[1]?.url || '';
                         document.getElementById('linkInit3').value = appState.initiatives[2]?.url || '';
+                    }
+                    if(appState.evidenceLinks) {
+                        for(let i=1; i<=11; i++) {
+                            document.getElementById('evidence'+i).value = appState.evidenceLinks[i] || '';
+                        }
                     }
 
                     showCustomModal('تم تسجيل الدخول', 'مرحباً بكِ في لوحة التحكم المحمية سحابياً.');
@@ -795,17 +842,23 @@
             };
 
             const updatedInitiatives = [
-                { title: "بستان الطفولة المبدعة", desc: "برامج تفاعلية رائدة لإثراء مهارات التفكير الأساسية.", url: document.getElementById('linkInit1').value.trim() },
-                { title: "حديقة الحكايات الرقمية", desc: "تعزيز مهارات القراءة والتلاوة للطفولة المبكرة بأسلوب قصصي.", url: document.getElementById('linkInit2').value.trim() },
-                { title: "جسور التعلم والتمكين", desc: "ربط أوراق العمل والدروس الرقمية المتكاملة عبر OneDrive.", url: document.getElementById('linkInit3').value.trim() }
+                { titleAr: "بستان الطفولة المبدعة", titleEn: "Creative Childhood Orchard", descAr: "برامج تفاعلية رائدة لإثراء مهارات التفكير الأساسية.", descEn: "Leading interactive programs to enrich core thinking skills.", url: document.getElementById('linkInit1').value.trim() },
+                { titleAr: "حديقة الحكايات الرقمية", titleEn: "Digital Tales Garden", descAr: "تعزيز مهارات القراءة والتلاوة للطفولة المبكرة بأسلوب قصصي.", descEn: "Enhancing reading and recitation skills through storytelling.", url: document.getElementById('linkInit2').value.trim() },
+                { titleAr: "جسور التعلم والتمكين", titleEn: "Learning & Empowerment Bridges", descAr: "ربط أوراق العمل والدروس الرقمية المتكاملة عبر OneDrive.", descEn: "Connecting worksheets and integrated digital lessons via OneDrive.", url: document.getElementById('linkInit3').value.trim() }
             ];
+
+            let newEvidenceLinks = {};
+            for(let i=1; i<=11; i++) {
+                newEvidenceLinks[i] = document.getElementById('evidence'+i).value.trim();
+            }
 
             db.ref('settings').set({
                 evidencePass: np || "123456",
                 links: newLinks,
+                evidenceLinks: newEvidenceLinks,
                 initiatives: updatedInitiatives
             }).then(() => {
-                showCustomModal('نجاح الحفظ', 'تم تحديث وتزامن الروابط وكلمات المرور عبر جميع الأجهزة بنجاح!');
+                showCustomModal('نجاح الحفظ', 'تم تحديث وتزامن الروابط وشواهد الأداء عبر جميع الأجهزة بنجاح!');
                 closeAdminModal();
             });
         }
