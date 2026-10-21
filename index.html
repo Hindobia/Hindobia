@@ -3,15 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hindobia | أ. هند القرني - المنصة الرقمية</title>
-    <!-- الخطوط المعتمدة ومن ضمنها Cinzel Decorative لشعار Hindobia -->
+    <title>Hindobia</title>
+    
+    <!-- روابط أيقونات الشاشة الرئيسية للهواتف (PWA / Apple Touch Icon) -->
+    <link rel="apple-touch-icon" href="Icon.jpeg">
+    <link rel="icon" type="image/jpeg" href="Icon.jpeg">
+
+    <!-- الخطوط المعتمدة -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@600;700;800&family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     <!-- مكتبة الأيقونات FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- مكتبات Firebase الأساسية المحدثة للعمل مباشرة في المتصفح -->
+    <!-- مكتبات Firebase الأساسية المتوافقة (Compat) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -35,7 +40,7 @@
             --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
-        /* الثيمات المتعددة وتناسق الـ 3D */
+        /* الثيمات المتعددة */
         [data-theme="hindobia"] {
             --bg-primary: #F7F2EB; --bg-card: #EDE7F0; --bg-surface: #FFFCF8;
             --primary-accent: #D8C7E8; --secondary-accent: #E8C9D2; --gold-accent: #D6B779;
@@ -126,9 +131,8 @@
 
         .hero-title { font-family: var(--font-title); font-size: 2.8rem; font-weight: 700; color: var(--text-main); line-height: 1.2; margin-bottom: 1.2rem; }
         .hero-desc { font-size: 1.15rem; color: var(--text-muted); margin-bottom: 2rem; font-style: italic; line-height: 1.9; }
-        .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
-        .btn-primary { background: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent)); color: var(--text-main); padding: 12px 28px; border-radius: 30px; border: 1px solid var(--border-soft); text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: var(--transition); box-shadow: var(--shadow-3d); }
-        .btn-secondary { background: var(--bg-surface); color: var(--text-main); padding: 12px 28px; border-radius: 30px; border: 1px solid var(--border-soft); text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        
+        /* تم إزالة الأزرار الزائدة هنا لتصبح نظيفة كما طلبتِ */
 
         .hero-3d-wrapper { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; z-index: 2; height: 450px; perspective: 1000px; }
         .realistic-shell { width: 280px; height: 260px; position: relative; cursor: pointer; transform-style: preserve-3d; transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -208,13 +212,20 @@
         footer { background: var(--bg-surface); border-top: 1px solid var(--border-soft); padding: 40px 5% 20px; text-align: center; position: relative; z-index: 2; }
         .copyright-text { color: var(--text-main); font-size: 0.95rem; font-weight: 600; line-height: 1.8; }
 
+        /* استجابة الموبايل مع إضافة الأزرار داخل قائمة البرغر */
         @media (max-width: 900px) { 
             .hero { flex-direction: column; text-align: center; padding-top: 110px; } 
             .menu-toggle { display: block; }
-            nav { position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-surface); border-bottom: 1px solid var(--border-soft); box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 1rem 2rem; display: none; }
+            nav { position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-surface); border-bottom: 1px solid var(--border-soft); box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 1.2rem 2rem; display: none; }
             nav.active { display: block; }
             nav ul { flex-direction: column; gap: 1rem; align-items: flex-start; }
+            
+            /* إخفاء الأزرار المكررة من الهيدر العلوي في الجوال لعرضها داخل القائمة مرتبة */
+            .header-actions .btn-action:not(.btn-lang) { display: none; }
+            .mobile-extra-actions { display: flex; gap: 10px; margin-top: 1rem; width: 100%; border-top: 1px solid var(--border-soft); padding-top: 1rem; }
+            .mobile-extra-actions button { flex: 1; justify-content: center; }
         }
+        .mobile-extra-actions { display: none; }
     </style>
 </head>
 <body>
@@ -236,6 +247,11 @@
                 <li><a href="#evidence" data-ar="شواهد الأداء" data-en="Evidence" onclick="toggleMobileMenu()">شواهد الأداء</a></li>
                 <li><a href="#tranquility" data-ar="الطمأنينة" data-en="Tranquility" onclick="toggleMobileMenu()">الطمأنينة</a></li>
             </ul>
+            <!-- عناصر إضافية تظهر حصرياً داخل قائمة الهواتف المحمولة -->
+            <div class="mobile-extra-actions">
+                <button class="btn-action" onclick="openThemeModal(); toggleMobileMenu();"><i class="fa-solid fa-palette" style="color: var(--gold-accent);"></i> <span data-ar="المظهر" data-en="Theme">المظهر</span></button>
+                <button class="btn-action" onclick="openAdminModal(); toggleMobileMenu();"><i class="fa-solid fa-lock"></i> <span data-ar="لوحة التحكم" data-en="Admin">لوحة التحكم</span></button>
+            </div>
         </nav>
 
         <div class="header-actions">
@@ -256,10 +272,6 @@
             <p class="hero-desc" data-ar="«في أروقة هذا القصر اللؤلؤي المنيع، تحفّه حديقة غنّاء مفعمة بالحكايات... حيث تسكن أرواح صغاري النقيّة، لتزهر عقولهم معرفة، وتنغرس في أفئدتهم بصمات أثرٍ تليد لا يمحوه الزمان.»" data-en="«In the quiet halls of this pearl palace, surrounded by a garden of tales... dwell the pure souls of my young learners, blooming with knowledge and leaving timeless footprints of inspiration.»">
                 «في أروقة هذا القصر اللؤلؤي المنيع، تحفّه حديقة غنّاء مفعمة بالحكايات... حيث تسكن أرواح صغاري النقيّة، لتزهر عقولهم معرفة، وتنغرس في أفئدتهم بصمات أثرٍ تليد لا يمحوه الزمان.»
             </p>
-            <div class="hero-buttons">
-                <a href="#cv" class="btn-primary"><i class="fa-solid fa-file-invoice"></i> <span data-ar="السيرة الذاتية" data-en="Curriculum Vitae">السيرة الذاتية</span></a>
-                <a href="#subjects" class="btn-secondary"><i class="fa-solid fa-book-open"></i> <span data-ar="المقررات والمصادر" data-en="Subjects & Resources">المقررات والمصادر</span></a>
-            </div>
         </div>
 
         <div class="hero-3d-wrapper">
@@ -331,25 +343,25 @@
                 <div class="card-icon"><i class="fa-solid fa-quran"></i></div>
                 <h3 data-ar="القرآن الكريم" data-en="Holy Quran">القرآن الكريم</h3>
                 <p style="font-size: 0.85rem; color: var(--text-muted);" data-ar="تلاوة وتفسير وإثراءات تفاعلية" data-en="Recitation, interpretation and interactive enrichment">تلاوة وتفسير وإثراءات تفاعلية</p>
-                <a href="#" class="btn-card-link" onclick="showCustomModal('OneDrive', 'سيتم فتح مجلد OneDrive المعتمد للمادة.')">OneDrive</a>
+                <a href="#" class="btn-card-link" onclick="openDynamicOneDrive('القرآن الكريم', 'quran')" data-ar="OneDrive" data-en="OneDrive">OneDrive</a>
             </div>
             <div class="card-3d-item">
                 <div class="card-icon"><i class="fa-solid fa-kaaba"></i></div>
                 <h3 data-ar="الدراسات الإسلامية" data-en="Islamic Studies">الدراسات الإسلامية</h3>
                 <p style="font-size: 0.85rem; color: var(--text-muted);" data-ar="أنشطة القيم والتعلم النشط" data-en="Values activities and active learning">أنشطة القيم والتعلم النشط</p>
-                <a href="#" class="btn-card-link" onclick="showCustomModal('OneDrive', 'سيتم فتح مجلد OneDrive المعتمد للمادة.')">OneDrive</a>
+                <a href="#" class="btn-card-link" onclick="openDynamicOneDrive('الدراسات الإسلامية', 'islamic')" data-ar="OneDrive" data-en="OneDrive">OneDrive</a>
             </div>
             <div class="card-3d-item">
                 <div class="card-icon"><i class="fa-solid fa-language"></i></div>
                 <h3 data-ar="لغتي" data-en="My Language">لغتي</h3>
                 <p style="font-size: 0.85rem; color: var(--text-muted);" data-ar="مهارات القراءة والقرائية" data-en="Reading and literacy skills">مهارات القراءة والقرائية</p>
-                <a href="#" class="btn-card-link" onclick="showCustomModal('OneDrive', 'سيتم فتح مجلد OneDrive المعتمد للمادة.')">OneDrive</a>
+                <a href="#" class="btn-card-link" onclick="openDynamicOneDrive('لغتي', 'lugaty')" data-ar="OneDrive" data-en="OneDrive">OneDrive</a>
             </div>
             <div class="card-3d-item">
                 <div class="card-icon"><i class="fa-solid fa-person-running"></i></div>
                 <h3 data-ar="التربية البدنية" data-en="Physical Education">التربية البدنية</h3>
                 <p style="font-size: 0.85rem; color: var(--text-muted);" data-ar="اللياقة والمهارات الحركية" data-en="Fitness and motor skills">اللياقة والمهارات الحركية</p>
-                <a href="#" class="btn-card-link" onclick="showCustomModal('OneDrive', 'سيتم فتح مجلد OneDrive المعتمد للمادة.')">OneDrive</a>
+                <a href="#" class="btn-card-link" onclick="openDynamicOneDrive('التربية البدنية', 'sport')" data-ar="OneDrive" data-en="OneDrive">OneDrive</a>
             </div>
             <div class="card-3d-item" style="border-color: var(--gold-accent); background: linear-gradient(135deg, var(--bg-surface), var(--bg-card));">
                 <div class="card-icon" style="color: var(--gold-accent);"><i class="fa-solid fa-laptop-file"></i></div>
@@ -524,25 +536,64 @@
         </div>
     </div>
 
-    <!-- لوحة التحكم المحمية بـ Firebase -->
+    <!-- لوحة التحكم المتطورة والمزودة بإدارة روابط ون دريف والشواهد والمبادرات -->
     <div class="modal" id="adminModal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-height: 85vh; overflow-y: auto;">
             <button class="modal-close" onclick="closeAdminModal()"><i class="fa-solid fa-xmark"></i></button>
+            
             <div id="adminLoginStep">
                 <h3 style="font-family: var(--font-title); font-size: 1.5rem; font-weight: 700; text-align: center; margin-bottom: 1rem;" data-ar="لوحة التحكم" data-en="Admin Dashboard">لوحة التحكم</h3>
-                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px; text-align:center;">ادخل اسم المستخدم وكلمة المرور المحمية سحابياً</p>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px; text-align:center;">ادخل البريد الإلكتروني وكلمة المرور المسجلة في فايربيس</p>
                 
                 <input type="email" id="adminEmailInput" placeholder="البريد الإلكتروني" value="T165922@asrg.moe.gov.sa" style="width:100%; padding:10px; margin-bottom:10px; border-radius:10px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);">
                 <input type="password" id="adminPassInput" placeholder="كلمة المرور" style="width:100%; padding:10px; margin-bottom:1rem; border-radius:10px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);">
                 
                 <button class="btn-primary" style="width: 100%; justify-content: center;" onclick="verifyAdminPass()" data-ar="دخول اللوحة" data-en="Login">دخول اللوحة</button>
             </div>
+
             <div id="adminControlStep" style="display: none;">
-                <h3 style="font-weight: 700;" data-ar="إدارة المحتوى والشواهد" data-en="Content Management">إدارة المحتوى والشواهد</h3>
+                <h3 style="font-weight: 700; margin-bottom: 10px;" data-ar="إدارة المحتوى والروابط سحابياً" data-en="Cloud Content Management">إدارة المحتوى والروابط سحابياً</h3>
                 <hr style="margin:1rem 0; border:0; border-top:1px solid var(--border-soft);">
-                <p data-ar="تغيير كلمة مرور الشواهد والأداء الوظيفي (تزامن لحظي):" data-en="Change Evidence Password:">تغيير كلمة مرور الشواهد والأداء الوظيفي (تزامن لحظي):</p>
-                <input type="text" id="newEvidencePass" placeholder="كلمة المرور الجديدة للشواهد" style="width:100%; padding:8px; margin:5px 0 10px 0; border-radius:8px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);">
-                <button class="btn-card-link" style="background:var(--gold-accent); color:#fff;" onclick="updateEvidencePassword()" data-ar="حفظ كلمة المرور الجديدة" data-en="Update Evidence Password">حفظ كلمة المرور الجديدة</button>
+                
+                <!-- إعداد كلمة مرور الشواهد -->
+                <div style="margin-bottom: 15px;">
+                    <label style="font-size: 0.85rem; font-weight: 700;" data-ar="كلمة مرور شواهد الأداء الوظيفي:" data-en="Evidence Password:">كلمة مرور شواهد الأداء الوظيفي:</label>
+                    <input type="text" id="newEvidencePass" placeholder="كلمة المرور الجديدة" style="width:100%; padding:8px; margin-top:5px; border-radius:8px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);">
+                </div>
+
+                <!-- إعداد روابط المقررات (OneDrive) -->
+                <div style="margin-bottom: 15px;">
+                    <label style="font-size: 0.85rem; font-weight: 700;" data-ar="رابط ون دريف (القرآن الكريم):" data-en="OneDrive (Quran):">رابط ون دريف (القرآن الكريم):</label>
+                    <input type="text" id="linkQuran" placeholder="https://onedrive.live.com/..." style="width:100%; padding:8px; margin-top:5px; border-radius:8px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="font-size: 0.85rem; font-weight: 700;" data-ar="رابط ون دريف (الدراسات الإسلامية):" data-en="OneDrive (Islamic Studies):">رابط ون دريف (الدراسات الإسلامية):</label>
+                    <input type="text" id="linkIslamic" placeholder="https://onedrive.live.com/..." style="width:100%; padding:8px; margin-top:5px; border-radius:8px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="font-size: 0.85rem; font-weight: 700;" data-ar="رابط ون دريف (لغتي):" data-en="OneDrive (My Language):">رابط ون دريف (لغتي):</label>
+                    <input type="text" id="linkLugaty" placeholder="https://onedrive.live.com/..." style="width:100%; padding:8px; margin-top:5px; border-radius:8px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="font-size: 0.85rem; font-weight: 700;" data-ar="رابط ون دريف (التربية البدنية):" data-en="OneDrive (Physical Education):">رابط ون دريف (Physical Education):</label>
+                    <input type="text" id="linkSport" placeholder="https://onedrive.live.com/..." style="width:100%; padding:8px; margin-top:5px; border-radius:8px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);">
+                </div>
+
+                <!-- إعداد روابط المبادرات التعليمية -->
+                <div style="margin-bottom: 15px;">
+                    <label style="font-size: 0.85rem; font-weight: 700;" data-ar="رابط مبادرة (بستان الطفولة المبدعة):" data-en="Initiative 1 Link:">رابط مبادرة (بستان الطفولة المبدعة):</label>
+                    <input type="text" id="linkInit1" style="width:100%; padding:8px; margin-top:5px; border-radius:8px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="font-size: 0.85rem; font-weight: 700;" data-ar="رابط مبادرة (حديقة الحكايات الرقمية):" data-en="Initiative 2 Link:">رابط مبادرة (حديقة الحكايات الرقمية):</label>
+                    <input type="text" id="linkInit2" style="width:100%; padding:8px; margin-top:5px; border-radius:8px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="font-size: 0.85rem; font-weight: 700;" data-ar="رابط مبادرة (جسور التعلم والتمكين):" data-en="Initiative 3 Link:">رابط مبادرة (جسور التعلم والتمكين):</label>
+                    <input type="text" id="linkInit3" style="width:100%; padding:8px; margin-top:5px; border-radius:8px; border:1px solid var(--border-soft); background:var(--bg-card); color:var(--text-main);">
+                </div>
+
+                <button class="btn-card-link" style="background:var(--gold-accent); color:#fff; width:100%; justify-content:center; margin-top:10px;" onclick="saveAdminSettings()" data-ar="حفظ وتزامن كافة التعديلات" data-en="Save All Changes">حفظ وتزامن كافة التعديلات</button>
             </div>
         </div>
     </div>
@@ -556,7 +607,7 @@
     </footer>
 
     <script>
-        // ربط إعدادات Firebase الخاصة بك
+        // إعدادات Firebase الخاصة بك
         const firebaseConfig = {
             apiKey: "AIzaSyAhAIbNN8TVEm31G7kBH3GyqNKbaQ7WA_U",
             authDomain: "hindobia-8f170.firebaseapp.com",
@@ -572,6 +623,12 @@
         let currentLang = 'ar';
         let appState = {
             evidencePass: "123456",
+            links: {
+                quran: "https://onedrive.live.com/",
+                islamic: "https://onedrive.live.com/",
+                lugaty: "https://onedrive.live.com/",
+                sport: "https://onedrive.live.com/"
+            },
             initiatives: [
                 { title: "بستان الطفولة المبدعة", desc: "برامج تفاعلية رائدة لإثراء مهارات التفكير الأساسية.", url: "https://schools.madrasati.sa/" },
                 { title: "حديقة الحكايات الرقمية", desc: "تعزيز مهارات القراءة والتلاوة للطفولة المبكرة بأسلوب قصصي.", url: "https://kalemtayeb.com/" },
@@ -579,11 +636,14 @@
             ]
         };
 
-        // التزامن اللحظي لقوردة البيانات لجلب كلمة المرور المحدثة على أي جهاز
-        db.ref('settings/evidencePass').on('value', (snapshot) => {
-            const val = snapshot.val();
-            if (val) {
-                appState.evidencePass = val;
+        // المزامنة اللحظية للبيانات والروابط من سحابة فايربيس
+        db.ref('settings').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                if(data.evidencePass) appState.evidencePass = data.evidencePass;
+                if(data.links) appState.links = data.links;
+                if(data.initiatives) appState.initiatives = data.initiatives;
+                renderInitiatives();
             }
         });
 
@@ -664,19 +724,26 @@
         function renderInitiatives() {
             const container = document.getElementById('initiativesContainer');
             container.innerHTML = '';
-            appState.initiatives.forEach(init => {
+            appState.initiatives.forEach((init, idx) => {
                 const card = document.createElement('div'); card.className = 'card-3d-item';
-                card.innerHTML = `<h3 style="font-weight:700;">${init.title}</h3><p style="color:var(--text-muted); font-size:0.85rem; margin:10px 0;">${init.desc}</p><a href="${init.url}" target="_blank" class="btn-card-link">الانتقال للمبادرة</a>`;
+                const btnTextAr = currentLang === 'ar' ? 'الانتقال للمبادرة' : 'Go to Initiative';
+                const btnTextEn = currentLang === 'en' ? 'Go to Initiative' : 'الانتقال للمبادرة';
+                card.innerHTML = `<h3 style="font-weight:700;">${init.title}</h3><p style="color:var(--text-muted); font-size:0.85rem; margin:10px 0;">${init.desc}</p><a href="${init.url}" target="_blank" class="btn-card-link" data-ar="الانتقال للمبادرة" data-en="Go to Initiative">${currentLang === 'ar' ? 'الانتقال للمبادرة' : 'Go to Initiative'}</a>`;
                 container.appendChild(card);
             });
-        } renderInitiatives();
+        }
+
+        function openDynamicOneDrive(subjectName, key) {
+            const targetUrl = appState.links && appState.links[key] ? appState.links[key] : "https://onedrive.live.com/";
+            window.open(targetUrl, '_blank');
+        }
 
         function openEvidenceModal(num) {
-            const pass = prompt('أدخلي كلمة المرور لعرض الشاهد رقم ' + num + ':');
+            const pass = prompt(currentLang === 'ar' ? 'أدخلي كلمة المرور لعرض الشاهد رقم ' + num + ':' : 'Enter password for evidence ' + num + ':');
             if (pass === appState.evidencePass) {
-                showCustomModal('تم التحقق بنجاح', 'سيتم تحويلك إلى مجلد OneDrive المعتمد لشواهد هذا المحور.');
+                showCustomModal(currentLang === 'ar' ? 'تم التحقق بنجاح' : 'Verified Successfully', currentLang === 'ar' ? 'سيتم تحويلك إلى مجلد OneDrive المعتمد لشواهد هذا المحور.' : 'Redirecting to authorized OneDrive folder.');
             } else if(pass !== null) {
-                showCustomModal('خطأ في كلمة المرور', 'كلمة المرور غير صحيحة، يرجى المحاولة مرة أخرى.');
+                showCustomModal(currentLang === 'ar' ? 'خطأ في كلمة المرور' : 'Password Error', currentLang === 'ar' ? 'كلمة المرور غير صحيحة، يرجى المحاولة مرة أخرى.' : 'Incorrect password, please try again.');
             }
         }
 
@@ -688,7 +755,6 @@
         }
         function closeAdminModal() { document.getElementById('adminModal').classList.remove('active'); }
         
-        // التحقق الآمن عبر Firebase Authentication
         function verifyAdminPass() {
             const email = document.getElementById('adminEmailInput').value.trim();
             const pass = document.getElementById('adminPassInput').value.trim();
@@ -697,25 +763,51 @@
                 .then((userCredential) => {
                     document.getElementById('adminLoginStep').style.display = 'none';
                     document.getElementById('adminControlStep').style.display = 'block';
+                    
+                    // تعبئة الحقول بالبيانات الحالية
+                    document.getElementById('newEvidencePass').value = appState.evidencePass;
+                    if(appState.links) {
+                        document.getElementById('linkQuran').value = appState.links.quran || '';
+                        document.getElementById('linkIslamic').value = appState.links.islamic || '';
+                        document.getElementById('linkLugaty').value = appState.links.lugaty || '';
+                        document.getElementById('linkSport').value = appState.links.sport || '';
+                    }
+                    if(appState.initiatives) {
+                        document.getElementById('linkInit1').value = appState.initiatives[0]?.url || '';
+                        document.getElementById('linkInit2').value = appState.initiatives[1]?.url || '';
+                        document.getElementById('linkInit3').value = appState.initiatives[2]?.url || '';
+                    }
+
                     showCustomModal('تم تسجيل الدخول', 'مرحباً بكِ في لوحة التحكم المحمية سحابياً.');
                 })
                 .catch((error) => {
-                    showCustomModal('خطأ في البيانات', 'البريد أو كلمة المرور غير صحيحة، تأكدي من إضافتها في قسم Authentication بفايربيس.');
+                    showCustomModal('خطأ في البيانات', 'البريد أو كلمة المرور غير صحيحة!');
                 });
         }
 
-        // تحديث وتزامن كلمة المرور لحظياً عبر الأجهزة
-        function updateEvidencePassword() {
+        function saveAdminSettings() {
             const np = document.getElementById('newEvidencePass').value.trim();
-            if(np) { 
-                db.ref('settings/evidencePass').set(np)
-                .then(() => {
-                    showCustomModal('نجاح التحديث', 'تم تحديث وتزامن كلمة المرور عبر جميع الأجهزة المفتوحة بنجاح!'); 
-                    closeAdminModal(); 
-                });
-            } else {
-                showCustomModal('تنبيه', 'يرجى إدخال كلمة المرور الجديدة.');
-            }
+            const newLinks = {
+                quran: document.getElementById('linkQuran').value.trim(),
+                islamic: document.getElementById('linkIslamic').value.trim(),
+                lugaty: document.getElementById('linkLugaty').value.trim(),
+                sport: document.getElementById('linkSport').value.trim()
+            };
+
+            const updatedInitiatives = [
+                { title: "بستان الطفولة المبدعة", desc: "برامج تفاعلية رائدة لإثراء مهارات التفكير الأساسية.", url: document.getElementById('linkInit1').value.trim() },
+                { title: "حديقة الحكايات الرقمية", desc: "تعزيز مهارات القراءة والتلاوة للطفولة المبكرة بأسلوب قصصي.", url: document.getElementById('linkInit2').value.trim() },
+                { title: "جسور التعلم والتمكين", desc: "ربط أوراق العمل والدروس الرقمية المتكاملة عبر OneDrive.", url: document.getElementById('linkInit3').value.trim() }
+            ];
+
+            db.ref('settings').set({
+                evidencePass: np || "123456",
+                links: newLinks,
+                initiatives: updatedInitiatives
+            }).then(() => {
+                showCustomModal('نجاح الحفظ', 'تم تحديث وتزامن الروابط وكلمات المرور عبر جميع الأجهزة بنجاح!');
+                closeAdminModal();
+            });
         }
     </script>
 </body>
