@@ -426,12 +426,12 @@
             </div>
         </section>
 
-        <!-- 7. ACHIEVEMENTS & CERTIFICATES -->
+        <!-- 7. ACHIEVEMENTS & CERTIFICATES (4 Boxes Dynamic Carousel) -->
         <section class="glass-panel p-8 rounded-3xl space-y-6 text-center">
             <h2 class="text-2xl font-bold font-cairo text-[var(--text-title)]" data-i18n="achievementsTitle">شهادات وإنجازات الميدان</h2>
             <p class="text-xs text-[var(--text-body)] max-w-xl mx-auto" data-i18n="achievementsSub">نماذج ودلائل التميز المهني والأوسمة التكريمية في مسيرة العطاء</p>
 
-            <div id="certificatesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2"></div>
+            <div id="certificatesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-2 max-w-6xl mx-auto"></div>
         </section>
 
     </main>
@@ -568,7 +568,7 @@
 
     <!-- JavaScript Core Script & Firebase Real-time Sync -->
     <script>
-        // دالة مساعدة لإنشاء مصفوفة الشهادات الـ 38 تلقائياً (cer01.png حتى cer38.png)
+        // دالة لإنشاء مصفوفة الـ 38 شهادة تلقائياً (cer01.png إلى cer38.png)
         function generateDefaultCertificates() {
             const certs = [];
             for (let i = 1; i <= 38; i++) {
@@ -719,6 +719,7 @@
         window.onload = function() {
             initPearlPalace3D();
             renderCertificates();
+            startCertificatesRotation();
         };
 
         function renderCourses() {
@@ -752,24 +753,41 @@
             `).join('');
         }
 
+        // متغير لتتبع مؤشر عرض الشهادات في الـ 4 بوكسات ديناميكياً
+        let currentCertIndex = 0;
+        let certInterval = null;
+
         function renderCertificates() {
             const container = document.getElementById('certificatesGrid');
-            
-            // التأكد من تحميل الـ 38 شهادة كاملاً
-            if (!state.certificates || state.certificates.length < 38) {
+            if (!state.certificates || state.certificates.length === 0) {
                 state.certificates = generateDefaultCertificates();
             }
 
-            container.innerHTML = state.certificates.map((fileName, idx) => `
-                <div class="glass-card p-4 rounded-2xl space-y-3 relative overflow-hidden group">
-                    <div class="w-full h-44 bg-[var(--card-sec)] rounded-xl flex items-center justify-center border border-[var(--border-color)] overflow-hidden relative">
-                        <!-- أيقونة خلفية تظهر في حال تأخر تحميل الصورة دون مسح العنصر -->
+            // اختيار 4 شهادات متتالية دون تكرار في العرض الحالي وتغطية الـ 38 شهادة بالتدوير
+            const activeCerts = [];
+            for (let i = 0; i < 4; i++) {
+                const certIndex = (currentCertIndex + i) % state.certificates.length;
+                activeCerts.push(state.certificates[certIndex]);
+            }
+
+            container.innerHTML = activeCerts.map((fileName) => `
+                <div class="glass-card p-3 rounded-2xl relative overflow-hidden group">
+                    <div class="w-full h-52 bg-[var(--card-sec)] rounded-xl flex items-center justify-center border border-[var(--border-color)] overflow-hidden relative shadow-inner">
                         <i class="fa-solid fa-award text-3xl text-[var(--accent-gold)] opacity-40 absolute"></i>
-                        <img src="${fileName}" alt="شهادة وإنجاز ${idx+1}" loading="lazy" class="w-full h-full object-cover relative z-10 group-hover:scale-105 transition-transform duration-300" onerror="this.style.opacity='0';">
+                        <img src="${fileName}" alt="شهادة وإنجاز" loading="lazy" class="w-full h-full object-cover relative z-10 group-hover:scale-105 transition-transform duration-500" onerror="this.style.opacity='0';">
                     </div>
-                    <p class="text-[11px] font-bold text-center text-[var(--text-title)] truncate">شهادة إنجاز #${idx + 1}</p>
                 </div>
             `).join('');
+        }
+
+        // دالة تدوير الشهادات كل 2 ثانية
+        function startCertificatesRotation() {
+            if (certInterval) clearInterval(certInterval);
+            certInterval = setInterval(() => {
+                if (!state.certificates || state.certificates.length === 0) return;
+                currentCertIndex = (currentCertIndex + 4) % state.certificates.length;
+                renderCertificates();
+            }, 2000);
         }
 
         function renderEvidences() {
