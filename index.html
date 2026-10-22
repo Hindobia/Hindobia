@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hindobia | القصر اللؤلؤي</title>
+    
+    <!-- Favicon & Mobile PWA App Icons -->
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="apple-touch-icon" href="icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Hindobia">
+    <meta name="theme-color" content="#F7F2EB">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Amiri, Tajawal, Cairo, Cinzel Decorative -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@300;400;600;700;800;900&family=Cinzel+Decorative:wght@700;900&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        :root {
+            --bg-main: #F7F2EB;
+            --card-main: #FFFCF8;
+            --card-sec: #EDE7F0;
+            --accent-purple: #D8C7E8;
+            --accent-pink: #E8C9D2;
+            --accent-gold: #D6B779;
+            --text-title: #51465A;
+            --text-body: #82768A;
+            --border-color: #E5DCE8;
+            --shadow-color: rgba(81, 70, 90, 0.08);
+            --glass-bg: rgba(255, 252, 248, 0.85);
+            --glass-border: rgba(216, 199, 232, 0.5);
+        }
+
+        body {
+            font-family: 'Tajawal', 'Cairo', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-title);
+            transition: background-color 0.6s ease, color 0.6s ease;
+            overflow-x: hidden;
+        }
+
+        .font-amiri { font-family: 'Amiri', serif; }
+        .font-cinzel { font-family: 'Cinzel Decorative', serif; }
+        .font-cairo { font-family: 'Cairo', sans-serif; }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 45px var(--shadow-color);
+        }
+
+        .glass-card {
+            background: var(--card-main);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 12px 30px var(--shadow-color);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--accent-gold);
+            box-shadow: 0 20px 40px rgba(214, 183, 121, 0.25);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--text-title), var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @keyframes float3d {
+            0%, 100% { transform: translateY(0px) rotateX(0deg) rotateY(0deg); }
+            50% { transform: translateY(-10px) rotateX(3deg) rotateY(3deg); }
+        }
+
+        .animate-float-3d {
+            animation: float3d 6s ease-in-out infinite;
+            transform-style: preserve-3d;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(214, 183, 121, 0.4), inset 0 0 15px rgba(216, 199, 232, 0.4); }
+            50% { box-shadow: 0 0 35px rgba(216, 199, 232, 0.8), inset 0 0 25px rgba(214, 183, 121, 0.6); }
+        }
+
+        .animate-pulse-glow {
+            animation: pulseGlow 3s infinite;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-main); }
+        ::-webkit-scrollbar-thumb { background: var(--accent-purple); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-gold); }
+    </style>
+</head>
+<body class="relative min-h-screen">
+
+    <!-- Toast Notification Container -->
+    <div id="toastNotification" class="fixed top-6 right-6 z-[9999] transform translate-x-full opacity-0 transition-all duration-300 max-w-sm pointer-events-none">
+        <div class="glass-panel p-4 rounded-2xl border border-[var(--accent-gold)] shadow-2xl flex items-center gap-3 text-xs font-bold text-[var(--text-title)] bg-[var(--card-main)]">
+            <i id="toastIcon" class="fa-solid fa-circle-check text-[var(--accent-gold)] text-base"></i>
+            <span id="toastText">رسالة التنبيه هنا</span>
+        </div>
+    </div>
+
+    <!-- 3D Immersive Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Header / Navigation Bar -->
+    <nav class="sticky top-0 z-40 px-4 py-3 glass-panel border-b border-[var(--border-color)] transition-all">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[var(--accent-purple)] to-[var(--accent-gold)] p-0.5 shadow-lg flex items-center justify-center animate-pulse-glow">
+                    <div class="w-full h-full bg-[var(--card-main)] rounded-[14px] flex items-center justify-center">
+                        <i class="fa-solid fa-gem text-[var(--accent-gold)] text-sm"></i>
+                    </div>
+                </div>
+                <div class="text-right ltr:text-left">
+                    <h1 class="font-cinzel font-black text-xl text-[var(--text-title)] tracking-wider">HINDOBIA</h1>
+                    <p class="text-[10px] text-[var(--text-body)] font-bold tracking-widest" data-i18n="teacherTitle">القصر اللؤلؤي</p>
+                </div>
+            </div>
+
+            <div class="hidden xl:flex items-center gap-6 text-sm font-bold text-[var(--text-title)]">
+                <a href="#cv" class="font-cinzel text-base tracking-wider hover:text-[var(--accent-gold)]" data-i18n="brand">Hindobia</a>
+                <a href="#cv" class="hover:text-[var(--accent-gold)] transition-colors border-b-2 border-[var(--accent-gold)] pb-0.5" data-i18n="navCV">السيرة الذاتية</a>
+                <a href="#courses" class="hover:text-[var(--accent-gold)] transition-colors" data-i18n="navCourses">المقررات والمصادر</a>
+                <a href="#initiatives" class="hover:text-[var(--accent-gold)] transition-colors" data-i18n="navInitiatives">المبادرات</a>
+                <a href="#evidences" class="hover:text-[var(--accent-gold)] transition-colors" data-i18n="navEvidences">شواهد الأداء</a>
+                <a href="#tranquility" class="hover:text-[var(--accent-gold)] transition-colors" data-i18n="navTranquility">الطمأنينة</a>
+            </div>
+
+            <div class="hidden md:flex items-center gap-2 sm:gap-3">
+                <button id="langToggleBtn" onclick="toggleLanguage()" class="bg-[var(--accent-gold)] hover:opacity-95 text-white px-3.5 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md">
+                    <i class="fa-solid fa-globe"></i>
+                    <span id="langLabel">ENG</span>
+                </button>
+                <button onclick="openModal('themeModal')" class="bg-[var(--card-sec)] hover:bg-[var(--accent-pink)] text-[var(--text-title)] px-3.5 py-2 rounded-2xl text-xs font-bold transition-all border border-[var(--border-color)] flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-palette text-[var(--accent-gold)]"></i>
+                    <span data-i18n="themeBtn">المظهر</span>
+                </button>
+                <button onclick="openModal('loginModal')" class="bg-[var(--card-sec)] hover:bg-[var(--accent-purple)] text-[var(--text-title)] px-3.5 py-2 rounded-2xl text-xs font-bold transition-all border border-[var(--border-color)] flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-lock text-[var(--accent-gold)]"></i>
+                    <span data-i18n="controlPanel">لوحة التحكم</span>
+                </button>
+            </div>
+
+            <button onclick="toggleMobileMenu()" class="xl:hidden text-[var(--text-title)] text-xl p-2">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+
+        <div id="mobileMenu" class="hidden xl:hidden pt-4 pb-3 border-t border-[var(--border-color)] mt-3 space-y-3 text-center text-sm font-bold">
+            <a href="#cv" onclick="toggleMobileMenu()" class="block py-2 hover:bg-[var(--card-sec)] rounded-xl" data-i18n="navCV">السيرة الذاتية</a>
+            <a href="#courses" onclick="toggleMobileMenu()" class="block py-2 hover:bg-[var(--card-sec)] rounded-xl" data-i18n="navCourses">المقررات والمصادر</a>
+            <a href="#initiatives" onclick="toggleMobileMenu()" class="block py-2 hover:bg-[var(--card-sec)] rounded-xl" data-i18n="navInitiatives">المبادرات</a>
+            <a href="#evidences" onclick="toggleMobileMenu()" class="block py-2 hover:bg-[var(--card-sec)] rounded-xl" data-i18n="navEvidences">شواهد الأداء</a>
+            <a href="#tranquility" onclick="toggleMobileMenu()" class="block py-2 hover:bg-[var(--card-sec)] rounded-xl" data-i18n="navTranquility">الطمأنينة والسكينة</a>
+            
+            <div class="pt-2 border-t border-[var(--border-color)] flex justify-center gap-2">
+                <button onclick="toggleLanguage(); toggleMobileMenu();" class="bg-[var(--accent-gold)] text-white px-3.5 py-2 rounded-xl text-xs font-bold">
+                    <i class="fa-solid fa-globe"></i> <span id="mobileLangLabel">ENG</span>
+                </button>
+                <button onclick="openModal('themeModal'); toggleMobileMenu();" class="bg-[var(--card-sec)] text-[var(--text-title)] px-3.5 py-2 rounded-xl text-xs font-bold border border-[var(--border-color)]">
+                    <i class="fa-solid fa-palette text-[var(--accent-gold)]"></i> <span data-i18n="themeBtn">المظهر</span>
+                </button>
+                <button onclick="openModal('loginModal'); toggleMobileMenu();" class="bg-[var(--card-sec)] text-[var(--text-title)] px-3.5 py-2 rounded-xl text-xs font-bold border border-[var(--border-color)]">
+                    <i class="fa-solid fa-lock text-[var(--accent-gold)]"></i> <span data-i18n="controlPanel">لوحة التحكم</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 py-8 space-y-16">
+
+        <!-- 1. FULL CV & PEARL PALACE HERO -->
+        <section id="cv" class="space-y-10 scroll-mt-24">
+            <div class="glass-panel rounded-3xl p-6 sm:p-12 relative overflow-hidden">
+                <div class="absolute -top-20 -left-20 w-72 h-72 bg-[var(--accent-purple)] opacity-30 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-20 -right-20 w-72 h-72 bg-[var(--accent-gold)] opacity-20 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+                    <div class="lg:col-span-8 space-y-6 text-center lg:text-right ltr:lg:text-left">
+                        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--card-sec)] border border-[var(--border-color)] text-[var(--text-title)] text-xs font-extrabold shadow-sm">
+                            <i class="fa-solid fa-crown text-[var(--accent-gold)] animate-pulse"></i>
+                            <span class="font-amiri text-sm tracking-wide" data-i18n="heroSubtitle">القصر اللؤلؤي — Pearl Palace | حديقة الحكايات</span>
+                        </div>
+
+                        <h2 class="text-3xl sm:text-5xl font-black font-amiri text-[var(--text-title)] leading-tight">
+                            <span data-i18n="cvPrefix">أ. </span> <span class="gradient-text font-cairo" data-i18n="cvName">هند حريسن علي القرني</span>
+                        </h2>
+
+                        <p class="font-amiri text-lg text-[var(--text-body)] italic tracking-wide" data-i18n="motto">
+                            «بيئة تعليمية تلامس القلوب وترتقي بشغفهم.»
+                        </p>
+
+                        <p class="text-sm sm:text-base text-[var(--text-body)] leading-relaxed font-semibold">
+                            <span data-i18n="cvRole">معلمة طفولة مبكرة في</span> <strong class="text-[var(--text-title)]" data-i18n="cvSchool">مدرسة الهيشة للطفولة المبكرة - بيشة</strong> | <span data-i18n="cvAdmin">الإدارة العامة للتعليم بمنطقة عسير</span>.
+                        </p>
+
+                        <div class="grid grid-cols-3 gap-3 pt-4 max-w-lg mx-auto lg:mx-0">
+                            <div class="glass-card p-3 rounded-2xl text-center">
+                                <span class="block font-black font-cairo text-2xl text-[var(--accent-gold)]">+18</span>
+                                <span class="text-xs font-bold text-[var(--text-body)]" data-i18n="statYears">سنوات عطاء</span>
+                            </div>
+                            <div class="glass-card p-3 rounded-2xl text-center">
+                                <span class="block font-black font-cairo text-2xl text-[var(--accent-purple)]">+200</span>
+                                <span class="text-xs font-bold text-[var(--text-body)]" data-i18n="statHours">ساعة تدريبية</span>
+                            </div>
+                            <div class="glass-card p-3 rounded-2xl text-center">
+                                <span class="block font-black font-cairo text-2xl text-[var(--accent-pink)]">100%</span>
+                                <span class="text-xs font-bold text-[var(--text-body)]" data-i18n="statTech">تمكين تقني</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-5 justify-center items-center">
+                        <div onclick="triggerEduInspiration()" class="glass-card p-6 rounded-3xl text-center cursor-pointer w-full max-w-xs animate-float-3d relative overflow-hidden group border border-[var(--border-color)]">
+                            <div id="eduShapes" class="w-16 h-16 mx-auto flex items-center justify-center gap-2 text-[var(--accent-gold)] text-2xl transition-all duration-700">
+                                <i class="fa-solid fa-shapes text-xl animate-spin" style="animation-duration: 12s;"></i>
+                            </div>
+                            <div id="eduBook" class="hidden w-16 h-16 mx-auto items-center justify-center text-[var(--accent-gold)] text-3xl">
+                                <i class="fa-solid fa-book-open-reader"></i>
+                            </div>
+                            <h3 class="font-cairo font-bold text-base text-[var(--text-title)]" data-i18n="cardMakerTitle">صانعة أثر ومُلهِمة</h3>
+                        </div>
+
+                        <div onclick="triggerLifeInspiration()" class="glass-card p-6 rounded-3xl text-center cursor-pointer w-full max-w-xs animate-float-3d relative overflow-hidden group border border-[var(--border-color)]" style="animation-delay: -3s;">
+                            <div id="lifeShell" class="w-16 h-16 mx-auto flex items-center justify-center text-[var(--accent-gold)] text-3xl transition-all duration-700">
+                                <i class="fa-solid fa-seedling"></i>
+                            </div>
+                            <div id="lifePearl" class="hidden w-16 h-16 mx-auto items-center justify-center text-[var(--accent-gold)] text-3xl animate-pulse">
+                                <i class="fa-solid fa-gem"></i>
+                            </div>
+                            <h3 class="font-cairo font-bold text-base text-[var(--text-title)]" data-i18n="cardPearlTitle">جوهرة الإلهام</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-card p-6 rounded-3xl space-y-4">
+                    <h3 class="font-cairo font-bold text-lg text-[var(--text-title)] border-b border-[var(--border-color)] pb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-id-card text-[var(--accent-gold)]"></i>
+                        <span data-i18n="cvInfoTitle">المعلومات الشخصية والرسالة التربوية</span>
+                    </h3>
+                    <div class="space-y-3 text-sm text-[var(--text-body)]">
+                        <p><strong class="text-[var(--text-title)]" data-i18n="cvFullTitle">الاسم:</strong> <span data-i18n="cvFullName">أ. هند حريسن علي القرني</span></p>
+                        <p><strong class="text-[var(--text-title)]" data-i18n="cvRoleTitle">الوظيفة:</strong> <span data-i18n="cvRoleVal">معلمة طفولة مبكرة - مدرسة الهيشة</span></p>
+                        <p><strong class="text-[var(--text-title)]" data-i18n="cvGoalTitle">الهدف المهني:</strong> <span data-i18n="cvGoalVal">غرس القيم وتنمية مهارات التفكير الإبداعي والنقدي لدى الأطفال في مرحلة الطفولة المبكرة من خلال بيئة آمنة ومحفزة تراعي خصائص النمو، وصناعة جيل واثق ومبتكر.</span></p>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 rounded-3xl space-y-4">
+                    <h3 class="font-cairo font-bold text-lg text-[var(--text-title)] border-b border-[var(--border-color)] pb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-graduation-cap text-[var(--accent-gold)]"></i>
+                        <span data-i18n="cvEduTitle">المؤهلات والمسار التعليمي</span>
+                    </h3>
+                    <ul class="space-y-3 text-sm text-[var(--text-body)]">
+                        <li class="flex items-center gap-2">
+                            <i class="fa-solid fa-check text-[var(--accent-gold)] text-xs"></i>
+                            <span><strong class="text-[var(--text-title)]" data-i18n="edu1Year">2007م:</strong> <span data-i18n="edu1Val">بكالوريوس التربية - كلية إعداد المعلمات ببلقرن</span></span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i class="fa-solid fa-check text-[var(--accent-gold)] text-xs"></i>
+                            <span><strong class="text-[var(--text-title)]" data-i18n="edu2Year">2003م:</strong> <span data-i18n="edu2Val">شهادة الثانوية العامة - ثانوية شعف بلقرن</span></span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i class="fa-solid fa-check text-[var(--accent-gold)] text-xs"></i>
+                            <span><strong class="text-[var(--text-title)]" data-i18n="edu3Year">2000م:</strong> <span data-i18n="edu3Val">شهادة المرحلة المتوسطة - متوسطة شعف بلقرن</span></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. COURSES, RESOURCES & NAFIS -->
+        <section id="courses" class="space-y-8 scroll-mt-24">
+            <div class="text-center space-y-2">
+                <h2 class="text-3xl font-extrabold font-cairo text-[var(--text-title)]" data-i18n="coursesSectionTitle">المقررات والمصادر وبنك نافس</h2>
+                <p class="text-sm text-[var(--text-body)]" data-i18n="coursesSubTitle">محتوى يتم تحديثه باستمرار</p>
+            </div>
+            <div id="coursesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </section>
+
+        <!-- 3. EDUCATIONAL PLATFORMS -->
+        <section id="platforms" class="space-y-8 scroll-mt-24">
+            <div class="text-center space-y-2">
+                <h2 class="text-3xl font-extrabold font-cairo text-[var(--text-title)]" data-i18n="platformsTitle">المنصات التعليمية الرسمية</h2>
+                <p class="text-sm text-[var(--text-body)]" data-i18n="platformsSubTitle">روابط سريعة ومباشرة للمنصات الوزارية والتعليمية المعتمدة</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+                <a href="https://www.moe.gov.sa/" target="_blank" class="glass-card p-6 rounded-3xl text-center space-y-3 block hover:border-[var(--accent-gold)]">
+                    <div class="w-14 h-14 mx-auto rounded-2xl bg-[var(--card-sec)] flex items-center justify-center text-[var(--accent-gold)] text-2xl shadow-inner">
+                        <i class="fa-solid fa-building-columns"></i>
+                    </div>
+                    <h3 class="font-cairo font-bold text-base text-[var(--text-title)]" data-i18n="pMoe">وزارة التعليم</h3>
+                </a>
+                <a href="https://schools.madrasati.sa/" target="_blank" class="glass-card p-6 rounded-3xl text-center space-y-3 block hover:border-[var(--accent-gold)]">
+                    <div class="w-14 h-14 mx-auto rounded-2xl bg-[var(--card-sec)] flex items-center justify-center text-[var(--accent-gold)] text-2xl shadow-inner">
+                        <i class="fa-solid fa-laptop-code"></i>
+                    </div>
+                    <h3 class="font-cairo font-bold text-base text-[var(--text-title)]" data-i18n="pMadrasati">منصة مدرستي</h3>
+                </a>
+                <a href="https://noor.moe.gov.sa/" target="_blank" class="glass-card p-6 rounded-3xl text-center space-y-3 block hover:border-[var(--accent-gold)]">
+                    <div class="w-14 h-14 mx-auto rounded-2xl bg-[var(--card-sec)] flex items-center justify-center text-[var(--accent-gold)] text-2xl shadow-inner">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <h3 class="font-cairo font-bold text-base text-[var(--text-title)]" data-i18n="pNoor">نظام نور</h3>
+                </a>
+                <a href="https://www.ien.edu.sa/" target="_blank" class="glass-card p-6 rounded-3xl text-center space-y-3 block hover:border-[var(--accent-gold)]">
+                    <div class="w-14 h-14 mx-auto rounded-2xl bg-[var(--card-sec)] flex items-center justify-center text-[var(--accent-gold)] text-2xl shadow-inner">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+                    <h3 class="font-cairo font-bold text-base text-[var(--text-title)]" data-i18n="pIen">عين التعليمية</h3>
+                </a>
+                <a href="https://sshr.moe.gov.sa/" target="_blank" class="glass-card p-6 rounded-3xl text-center space-y-3 block hover:border-[var(--accent-gold)]">
+                    <div class="w-14 h-14 mx-auto rounded-2xl bg-[var(--card-sec)] flex items-center justify-center text-[var(--accent-gold)] text-2xl shadow-inner">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <h3 class="font-cairo font-bold text-base text-[var(--text-title)]" data-i18n="pFaris">فارس</h3>
+                </a>
+            </div>
+        </section>
+
+        <!-- 4. INITIATIVES & PROJECTS -->
+        <section id="initiatives" class="space-y-8 scroll-mt-24">
+            <div class="text-center space-y-2">
+                <h2 class="text-3xl font-extrabold font-cairo text-[var(--text-title)]" data-i18n="initiativesTitle">المبادرات التعليمية والمشاريع</h2>
+                <p class="text-sm text-[var(--text-body)]" data-i18n="initiativesSubTitle">مشاريع وإنجازات تفاعلية مستمرة لخدمة الطفولة والتعلم</p>
+            </div>
+            <div id="initiativesGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+        </section>
+
+        <!-- 5. EVIDENCES & JOB PERFORMANCE -->
+        <section id="evidences" class="glass-panel p-8 rounded-3xl space-y-8 scroll-mt-24">
+            <div class="text-center space-y-2">
+                <h2 class="text-3xl font-extrabold font-cairo text-[var(--text-title)]" data-i18n="evidencesTitle">الشواهد والأداء الوظيفي</h2>
+                <p class="text-sm text-[var(--text-body)]" data-i18n="evidencesSubTitle">محاور الأداء الوظيفي المعتمدة (محمية)</p>
+            </div>
+
+            <div id="lockStateBanner" class="text-center p-4 bg-[var(--card-sec)] rounded-2xl border border-[var(--border-color)] max-w-md mx-auto space-y-3">
+                <p class="text-xs text-[var(--text-body)] font-bold" data-i18n="protectedNotice">يجب طلب كلمة المرور من المسؤولة</p>
+                <div class="flex gap-2 justify-center">
+                    <input type="password" id="evidencePassInput" data-i18n-ph="passPlaceholder" placeholder="أدخلي كلمة المرور" class="px-4 py-2 rounded-xl text-xs border border-[var(--border-color)] bg-[var(--card-main)] text-[var(--text-title)] outline-none focus:border-[var(--accent-gold)]">
+                    <button onclick="unlockEvidences()" class="bg-[var(--accent-gold)] text-white px-4 py-2 rounded-xl text-xs font-bold hover:opacity-95" data-i18n="unlockBtn">فك القفل</button>
+                </div>
+            </div>
+
+            <div id="evidencesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </section>
+
+        <!-- 6. TRANQUILITY & PEACE -->
+        <section id="tranquility" class="space-y-8 scroll-mt-24">
+            <div class="text-center space-y-2">
+                <h2 class="text-3xl font-extrabold font-cairo text-[var(--text-title)]" data-i18n="tranquilityTitle">الطمأنينة والسكينة</h2>
+                <p class="text-sm text-[var(--text-body)]" data-i18n="tranquilitySubTitle">مساحة إيمانية ومعرفية تتغذى بها الأرواح وتستقر معها القلوب</p>
+            </div>
+
+            <div class="space-y-4 max-w-4xl mx-auto">
+                <div class="glass-card p-6 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4 border-l-4 border-l-[var(--accent-gold)] ltr:border-l-0 ltr:border-r-4 ltr:border-r-[var(--accent-gold)]">
+                    <div class="space-y-1 text-center sm:text-right ltr:sm:text-left">
+                        <h3 class="font-cairo font-bold text-lg text-[var(--text-title)] flex items-center justify-center sm:justify-start gap-2">
+                            <i class="fa-solid fa-tv text-[var(--accent-gold)]"></i>
+                            <span data-i18n="quranTitle">قناة القرآن الكريم</span>
+                        </h3>
+                        <p class="text-xs text-[var(--text-body)] italic font-amiri" data-i18n="quranSub">«في تدبر القرآن حياة القلوب، ونور البصائر، وطمأنينة السرائر..»</p>
+                    </div>
+                    <a href="https://www.youtube.com/SaudiQuranTv" target="_blank" class="bg-[var(--card-sec)] hover:bg-[var(--accent-purple)] text-[var(--text-title)] px-5 py-2.5 rounded-2xl text-xs font-bold transition-all border border-[var(--border-color)] whitespace-nowrap shadow-sm" data-i18n="quranBtn">
+                        الانتقال للبث المباشر
+                    </a>
+                </div>
+
+                <div class="glass-card p-6 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4 border-l-4 border-l-[var(--accent-gold)] ltr:border-l-0 ltr:border-r-4 ltr:border-r-[var(--accent-gold)]">
+                    <div class="space-y-1 text-center sm:text-right ltr:sm:text-left">
+                        <h3 class="font-cairo font-bold text-lg text-[var(--text-title)] flex items-center justify-center sm:justify-start gap-2">
+                            <i class="fa-solid fa-kaaba text-[var(--accent-gold)]"></i>
+                            <span data-i18n="sunnahTitle">قناة السنة النبوية</span>
+                        </h3>
+                        <p class="text-xs text-[var(--text-body)] italic font-amiri" data-i18n="sunnahSub">«من أشرقت في قلبه أنوار السنة السنية، أشرق وجهه ببهجة القبول..»</p>
+                    </div>
+                    <a href="https://www.youtube.com/@SaudiSunnahTv" target="_blank" class="bg-[var(--card-sec)] hover:bg-[var(--accent-purple)] text-[var(--text-title)] px-5 py-2.5 rounded-2xl text-xs font-bold transition-all border border-[var(--border-color)] whitespace-nowrap shadow-sm" data-i18n="sunnahBtn">
+                        الانتقال للبث المباشر
+                    </a>
+                </div>
+
+                <div class="glass-card p-6 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4 border-l-4 border-l-[var(--accent-gold)] ltr:border-l-0 ltr:border-r-4 ltr:border-r-[var(--accent-gold)]">
+                    <div class="space-y-1 text-center sm:text-right ltr:sm:text-left">
+                        <h3 class="font-cairo font-bold text-lg text-[var(--text-title)] flex items-center justify-center sm:justify-start gap-2">
+                            <i class="fa-solid fa-book-bookmark text-[var(--accent-gold)]"></i>
+                            <span data-i18n="wordsTitle">الكلم الطيب</span>
+                        </h3>
+                        <p class="text-xs text-[var(--text-body)] italic font-amiri" data-i18n="wordsSub">«الكلم الطيب يرفع صاحبه إلى أعلى درجات القرب، فالذكر للقلب مثل الماء للسمك..»</p>
+                    </div>
+                    <a href="https://kalemtayeb.com/" target="_blank" class="bg-[var(--card-sec)] hover:bg-[var(--accent-purple)] text-[var(--text-title)] px-5 py-2.5 rounded-2xl text-xs font-bold transition-all border border-[var(--border-color)] whitespace-nowrap shadow-sm inline-block text-center" data-i18n="wordsBtn">
+                        زيارة موسوعة الكلم الطيب
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. ACHIEVEMENTS & CERTIFICATES -->
+        <section class="glass-panel p-8 rounded-3xl space-y-6 text-center">
+            <h2 class="text-2xl font-bold font-cairo text-[var(--text-title)]" data-i18n="achievementsTitle">شهادات وإنجازات الميدان</h2>
+            <p class="text-xs text-[var(--text-body)] max-w-xl mx-auto" data-i18n="achievementsSub">نماذج ودلائل التميز المهني والأوسمة التكريمية في مسيرة العطاء</p>
+
+            <div id="certificatesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2"></div>
+        </section>
+
+    </main>
+
+    <!-- Floating WhatsApp Button -->
+    <div class="fixed bottom-6 left-6 ltr:left-auto ltr:right-6 z-40">
+        <button onclick="openWhatsappModal()" class="w-14 h-14 rounded-full bg-emerald-500 text-white flex items-center justify-center text-2xl shadow-2xl animate-pulse-glow hover:scale-110 transition-transform">
+            <i class="fa-brands fa-whatsapp"></i>
+        </button>
+    </div>
+
+    <!-- Official Footer -->
+    <footer class="glass-panel py-8 border-t border-[var(--border-color)] mt-16 text-center text-xs text-[var(--text-body)] space-y-2">
+        <p class="font-semibold">All Rights Reserved 2026©</p>
+        <p class="font-bold text-[var(--text-title)]" data-i18n="footerBrand">هند القرني | Hindobia</p>
+        <p data-i18n="footerLocation">بيشة - المملكة العربية السعودية</p>
+    </footer>
+
+
+    <!-- ================= MODALS ================= -->
+
+    <!-- 1. Inspiration Modal -->
+    <div id="inspirationModal" class="fixed inset-0 bg-black/50 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="glass-panel max-w-lg w-full p-8 rounded-3xl text-center space-y-6 relative border border-[var(--accent-gold)] shadow-2xl">
+            <button onclick="closeModal('inspirationModal')" class="absolute top-4 left-4 ltr:left-auto ltr:right-4 text-[var(--text-body)] hover:text-[var(--text-title)] text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div id="quoteTag" class="text-xs font-bold text-[var(--accent-gold)] tracking-widest uppercase">TITLE | DATE</div>
+            <blockquote id="quoteText" class="text-base sm:text-lg font-semibold italic text-[var(--text-title)] leading-relaxed font-amiri">
+                "العبارة الملهمة هنا"
+            </blockquote>
+            <div class="pt-4 border-t border-[var(--border-color)] text-xs font-bold text-[var(--text-body)] font-cairo" data-i18n="quoteAuthor">
+                أ. هند القرني
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. WhatsApp Popup Modal -->
+    <div id="whatsappModal" class="fixed inset-0 bg-black/50 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="glass-panel max-w-sm w-full p-6 rounded-3xl text-center space-y-5 border border-[var(--accent-gold)]">
+            <div class="w-12 h-12 mx-auto rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl">
+                <i class="fa-brands fa-whatsapp"></i>
+            </div>
+            <p class="text-sm font-bold text-[var(--text-title)]" data-i18n="waPopupText">سيتم تحويلك الان للتحدث مع المصمم</p>
+            <div class="flex gap-3 justify-center pt-2">
+                <a href="https://wa.me/966565588869" target="_blank" onclick="closeModal('whatsappModal')" class="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-xl text-xs font-bold" data-i18n="waYes">نعم</a>
+                <button onclick="closeModal('whatsappModal')" class="bg-[var(--card-sec)] text-[var(--text-title)] px-6 py-2 rounded-xl text-xs font-bold" data-i18n="waNo">لا</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Themes Selector Modal -->
+    <div id="themeModal" class="fixed inset-0 bg-black/50 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="glass-panel max-w-md w-full p-6 rounded-3xl space-y-6 relative border border-[var(--border-color)]">
+            <button onclick="closeModal('themeModal')" class="absolute top-4 left-4 ltr:left-auto ltr:right-4 text-[var(--text-body)] text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="font-cairo font-bold text-center text-lg text-[var(--text-title)]" data-i18n="themeModalTitle">🎨 اختيار المظهر</h3>
+            
+            <div class="grid grid-cols-3 gap-3">
+                <button onclick="setTheme('hindobia')" class="p-3 rounded-2xl bg-[#EDE7F0] text-[#51465A] text-xs font-bold border border-[#D6B779]">✨ Hindobia</button>
+                <button onclick="setTheme('world')" class="p-3 rounded-2xl bg-[#E0F2FE] text-[#0369A1] text-xs font-bold border border-[#0284C7]">✈️ حول العالم</button>
+                <button onclick="setTheme('pink')" class="p-3 rounded-2xl bg-[#FCE7F3] text-[#831843] text-xs font-bold border border-[#F472B6]">🌸 الوردي الأنيق</button>
+                <button onclick="setTheme('fantasy')" class="p-3 rounded-2xl bg-[#F3E8FF] text-[#581C87] text-xs font-bold border border-[#C084FC]">🔮 الفانتازي</button>
+                <button onclick="setTheme('burgundy')" class="p-3 rounded-2xl bg-[#FFE4E6] text-[#881337] text-xs font-bold border border-[#FB7185]">🍷 البورغندي</button>
+                <button onclick="setTheme('saudi')" class="p-3 rounded-2xl bg-[#DCFCE7] text-[#064E3B] text-xs font-bold border border-[#4ADE80]">🇸🇦 الوطني SA</button>
+                <button onclick="setTheme('spring')" class="p-3 rounded-2xl bg-[#ECFCCB] text-[#365314] text-xs font-bold border border-[#A3E635]">🌿 الربيع</button>
+                <button onclick="setTheme('summer')" class="p-3 rounded-2xl bg-[#FEF3C7] text-[#78350F] text-xs font-bold border border-[#FBBF24]">☀️ الصيف</button>
+                <button onclick="setTheme('autumn')" class="p-3 rounded-2xl bg-[#FFEDD5] text-[#7C2D12] text-xs font-bold border border-[#FB923C]">🍂 الخريف</button>
+                <button onclick="setTheme('winter')" class="p-3 rounded-2xl bg-[#F0F9FF] text-[#0C4A6E] text-xs font-bold border border-[#38BDF8]">❄️ الشتاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Control Panel Login Modal -->
+    <div id="loginModal" class="fixed inset-0 bg-black/50 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="glass-panel max-w-xl w-full p-6 rounded-3xl space-y-5 relative border border-[var(--border-color)] max-h-[90vh] overflow-y-auto">
+            <button onclick="closeModal('loginModal')" class="absolute top-4 left-4 ltr:left-auto ltr:right-4 text-[var(--text-body)] text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <h3 class="font-cairo font-bold text-center text-lg text-[var(--text-title)]" data-i18n="loginTitle">🔒 لوحة التحكم والتزامن</h3>
+
+            <!-- Login Form -->
+            <div id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-[var(--text-body)] mb-1" data-i18n="userLabel">اسم المستخدم</label>
+                    <input type="text" id="adminUser" class="w-full px-4 py-2.5 rounded-xl text-xs bg-[var(--card-main)] border border-[var(--border-color)] text-[var(--text-title)] outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-[var(--text-body)] mb-1" data-i18n="passLabel">كلمة المرور</label>
+                    <input type="password" id="adminPass" class="w-full px-4 py-2.5 rounded-xl text-xs bg-[var(--card-main)] border border-[var(--border-color)] text-[var(--text-title)] outline-none">
+                </div>
+                <button onclick="attemptLogin()" class="w-full bg-[var(--accent-gold)] text-white py-2.5 rounded-xl text-xs font-bold hover:opacity-95 transition-opacity" data-i18n="loginBtn">دخول</button>
+
+                <div class="text-center pt-2">
+                    <button onclick="showResetNotice()" class="text-xs text-[var(--accent-gold)] font-bold animate-pulse hover:underline" data-i18n="forgotBtn">
+                        نسيتِ كلمة المرور؟
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Controls & Dynamic Link Containers -->
+            <div id="dashboardControls" class="hidden space-y-5">
+                <div class="p-3 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-xl text-center" data-i18n="loginSuccess">
+                    تم تسجيل الدخول بنجاح! التعديلات تتزامن فوراً مع فايربيس
+                </div>
+                
+                <!-- Change Evidence Password -->
+                <div class="space-y-2 p-3 bg-[var(--card-sec)] rounded-2xl border border-[var(--border-color)]">
+                    <label class="block text-xs font-bold text-[var(--text-title)]" data-i18n="changePassLabel">تغيير كلمة سر الشواهد الموحدة:</label>
+                    <input type="text" id="newEvidencePass" data-i18n-ph="newPassPlaceholder" placeholder="كلمة السر الجديدة" class="w-full px-3 py-2 rounded-xl text-xs bg-[var(--card-main)] border border-[var(--border-color)] text-[var(--text-title)] outline-none">
+                    <button onclick="updateEvidencePass()" class="w-full bg-[var(--accent-purple)] text-[var(--text-title)] py-2 rounded-xl text-xs font-bold hover:opacity-90 transition-all" data-i18n="savePassBtn">حفظ كلمة السر</button>
+                </div>
+
+                <!-- Courses Links Container -->
+                <div class="space-y-2 p-3 bg-[var(--card-sec)] rounded-2xl border border-[var(--border-color)]">
+                    <label class="block text-xs font-bold text-[var(--text-title)]" data-i18n="coursesAdminLabel">(رابط / OneDrive) إدارة روابط المقررات وبنك نافس:</label>
+                    <div id="adminCoursesContainer" class="space-y-2"></div>
+                    <button onclick="saveCoursesLinks()" class="w-full bg-[var(--accent-gold)] text-white py-2 rounded-xl text-xs font-bold hover:opacity-90 transition-all" data-i18n="saveCoursesBtn">حفظ روابط المقررات</button>
+                </div>
+
+                <!-- Initiatives Links Container -->
+                <div class="space-y-2 p-3 bg-[var(--card-sec)] rounded-2xl border border-[var(--border-color)]">
+                    <label class="block text-xs font-bold text-[var(--text-title)]" data-i18n="initiativesAdminLabel">إدارة روابط المبادرات التعليمية:</label>
+                    <div id="adminInitiativesContainer" class="space-y-2"></div>
+                    <button onclick="saveInitiativesLinks()" class="w-full bg-[var(--accent-gold)] text-white py-2 rounded-xl text-xs font-bold hover:opacity-90 transition-all" data-i18n="saveInitiativesBtn">حفظ روابط المبادرات</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- JavaScript Core Script & Firebase Real-time Sync -->
+    <script>
+        let state = {
+            lang: 'ar',
+            evidencePassword: '123',
+            isUnlocked: false,
+            courses: [
+                { id: 1, nameAr: 'القرآن الكريم', nameEn: 'Holy Quran', descAr: 'تلاوة وتفسير وإثراءات تفاعلية', descEn: 'Recitation, interpretation & interactive resources', link: '#' },
+                { id: 2, nameAr: 'الدراسات الإسلامية', nameEn: 'Islamic Studies', descAr: 'أنشطة القيم والتعلم النشط', descEn: 'Values activities & active learning', link: '#' },
+                { id: 3, nameAr: 'لغتي', nameEn: 'Arabic Language', descAr: 'مهارات القراءة والقرائية', descEn: 'Reading & literacy skills', link: '#' },
+                { id: 4, nameAr: 'التربية البدنية', nameEn: 'Physical Education', descAr: 'اللياقة والمهارات الحركية', descEn: 'Fitness & motor skills', link: '#' },
+                { id: 5, nameAr: 'محاكاة نافس', nameEn: 'Nafis Simulation', descAr: 'بنك أسئلة تدريبي تفاعلي لاختبارات نافس', descEn: 'Interactive training question bank for Nafis exams', isNafis: true, link: '#' }
+            ],
+            initiatives: [
+                { id: 1, titleAr: 'بستان الطفولة المبدعة', titleEn: 'Creative Childhood Garden', descAr: 'برامج تفاعلية رائدة لإثراء مهارات التفكير الأساسية.', descEn: 'Leading interactive programs to enrich core thinking skills.', link: '#' },
+                { id: 2, titleAr: 'حديقة الحكايات الرقمية', titleEn: 'Digital Tales Garden', descAr: 'تعزيز مهارات القراءة والتلاوة للطفولة المبكرة بأسلوب قصصي.', descEn: 'Enhancing reading and recitation skills through story-based approaches.', link: '#' },
+                { id: 3, titleAr: 'جسور التعلم والتمكين', titleEn: 'Learning & Empowerment Bridges', descAr: 'ربط أوراق العمل والدروس الرقمية المتكاملة عبر OneDrive.', descEn: 'Linking worksheets and integrated digital lessons via OneDrive.', link: '#' }
+            ],
+            certificates: ['cer01.png', 'cer02.png', 'cer03.png', 'cer04.png', 'cer05.png', 'cer06.png', 'cer07.png'],
+            evidencesAr: [
+                '1. أداء الواجبات الوظيفية', '2. إعداد وتنفيذ خطة التعلم', '3. الإدارة الصفية',
+                '4. التفاعل مع المجتمع المهني', '5. التفاعل مع أولياء الأمور', '6. التنوع في استراتيجيات التدريس',
+                '7. تحسين نتائج المتعلمين', '8. تحليل نتائج المتعلمين وتشخيص مستوياتهم', '9. تنوع أساليب التقويم',
+                '10. تهيئة البيئة التعليمية', '11. توظيف التقنيات ووسائل التعلم المناسبة'
+            ],
+            evidencesEn: [
+                '1. Performance of Job Duties', '2. Preparing & Executing Learning Plans', '3. Classroom Management',
+                '4. Professional Community Engagement', '5. Parental Communication & Interaction', '6. Diversity of Teaching Strategies',
+                '7. Improving Student Learning Outcomes', '8. Analyzing & Diagnosing Student Performance', '9. Assessment Methods Diversity',
+                '10. Educational Environment Preparation', '11. Utilizing Technology & Learning Tools'
+            ]
+        };
+
+        const eduQuotesAr = [
+            "التعليم ليس ملء وعاء، بل إيقاد شعلة نيرة في عقل الطفل برفق وجمال.",
+            "في كل طفل روح تتطلع للرقي، والمربّي الملهم هو من يمهد لها الطريق بالحب والسكينة.",
+            "إن صياغة العقول الصغرى في حديقة المعرفة هي أعظم الفنون قاطبةً وأبقاها أثراً."
+        ];
+        const eduQuotesEn = [
+            "Education is not the filling of a pail, but the lighting of a bright fire gently.",
+            "In every child is a spirit striving for elevation; an inspiring educator paves the way with love.",
+            "Shaping young minds in the garden of knowledge is the noblest of all arts."
+        ];
+
+        const lifeQuotesAr = [
+            "السكينة تنبع من الرضا، وطمأنينة القلب تجذب الخير من كل صوب هادئ.",
+            "كن كالماء النقي في القصر اللؤلؤي، يسقي الحياة أينما حل ولا يطلب المقابل.",
+            "الأمل لؤلؤة ثرية تتفتح في صمت الليل لتسوق النور إلى أعماق الروح."
+        ];
+        const lifeQuotesEn = [
+            "Tranquility springs from contentment, bringing goodness to a peaceful heart.",
+            "Be like pure water in the pearl palace, giving life wherever you go.",
+            "Hope is a rich pearl blossoming in night’s silence to guide light into the soul."
+        ];
+
+        const i18n = {
+            ar: {
+                controlPanel: "لوحة التحكم", themeBtn: "المظهر", navTranquility: "الطمأنينة", navEvidences: "شواهد الأداء",
+                navInitiatives: "المبادرات", navCourses: "المقررات والمصادر", navCV: "السيرة الذاتية", brand: "Hindobia",
+                teacherTitle: "القصر اللؤلؤي", heroSubtitle: "القصر اللؤلؤي — Pearl Palace | حديقة الحكايات",
+                motto: "«بيئة تعليمية تلامس القلوب وترتقي بشغفهم.»",
+                cvPrefix: "أ.", cvName: "هند حريسن علي القرني", cvRole: "معلمة طفولة مبكرة في", cvSchool: "مدرسة الهيشة للطفولة المبكرة - بيشة",
+                cvAdmin: "الإدارة العامة للتعليم بمنطقة عسير", statYears: "سنوات عطاء", statHours: "ساعة تدريبية", statTech: "تمكين تقني",
+                cardMakerTitle: "صانعة أثر ومُلهِمة", cardPearlTitle: "جوهرة الإلهام", cvInfoTitle: "المعلومات الشخصية والرسالة التربوية",
+                cvFullTitle: "الاسم:", cvFullName: "أ. هند حريسن علي القرني", cvRoleTitle: "الوظيفة:", cvRoleVal: "معلمة طفولة مبكرة - مدرسة الهيشة",
+                cvGoalTitle: "الهدف المهني:", cvGoalVal: "غرس القيم وتنمية مهارات التفكير الإبداعي والنقدي لدى الأطفال في مرحلة الطفولة المبكرة من خلال بيئة آمنة ومحفزة تراعي خصائص النمو، وصناعة جيل واثق ومبتكر.",
+                cvEduTitle: "المؤهلات والمسار التعليمي", edu1Year: "2007م:", edu1Val: "بكالوريوس التربية - كلية إعداد المعلمات ببلقرن",
+                edu2Year: "2003م:", edu2Val: "شهادة الثانوية العامة - ثانوية شعف بلقرن", edu3Year: "2000م:", edu3Val: "شهادة المرحلة المتوسطة - متوسطة شعف بلقرن",
+                coursesSectionTitle: "المقررات والمصادر وبنك نافس", coursesSubTitle: "المحتوى والموارد المربوطة بـ OneDrive مع منصة محاكاة اختبارات نافس",
+                platformsTitle: "المنصات التعليمية الرسمية", platformsSubTitle: "روابط سريعة ومباشرة للمنصات الوزارية والتعليمية المعتمدة",
+                pMoe: "وزارة التعليم", pMadrasati: "منصة مدرستي", pNoor: "نظام نور", pIen: "عين التعليمية", pFaris: "فارس",
+                initiativesTitle: "المبادرات التعليمية والمشاريع", initiativesSubTitle: "مشاريع وإنجازات تفاعلية مستمرة لخدمة الطفولة والتعلم",
+                evidencesTitle: "الشواهد والأداء الوظيفي", evidencesSubTitle: "محاور الأداء الوظيفي المعتمدة (محمية بكلمة مرور تتغير من لوحة التحكم)",
+                protectedNotice: "جميع المؤشرات والشواهد محمية بكلمة مرور موحدة", unlockBtn: "فك القفل", passPlaceholder: "أدخلي كلمة المرور",
+                tranquilityTitle: "الطمأنينة والسكينة", tranquilitySubTitle: "مساحة إيمانية ومعرفية تتغذى بها الأرواح وتستقر معها القلوب",
+                quranTitle: "قناة القرآن الكريم", quranSub: "«في تدبر القرآن حياة القلوب، ونور البصائر، وطمأنينة السرائر..»",
+                quranBtn: "الانتقال للبث المباشر", sunnahTitle: "قناة السنة النبوية", sunnahSub: "«من أشرقت في قلبه أنوار السنة السنية، أشرق وجهه ببهجة القبول..»",
+                sunnahBtn: "الانتقال للبث المباشر", wordsTitle: "الكلم الطيب", wordsSub: "«الكلم الطيب يرفع صاحبه إلى أعلى درجات القرب، فالذكر للقلب مثل الماء للسمك..»",
+                wordsBtn: "زيارة موسوعة الكلم الطيب", achievementsTitle: "شهادات وإنجازات الميدان", achievementsSub: "نماذج ودلائل التميز المهني والأوسمة التكريمية في مسيرة العطاء",
+                waPopupText: "سيتم تحويلك الان للتحدث مع المصمم", waYes: "نعم", waNo: "لا", themeModalTitle: "🎨 اختيار المظهر",
+                loginTitle: "🔒 لوحة التحكم والتزامن ", userLabel: "اسم المستخدم", passLabel: "كلمة المرور", loginBtn: "دخول",
+                forgotBtn: "نسيتِ كلمة المرور؟", loginSuccess: "تم تسجيل الدخول بنجاح! التعديلات تتزامن فوراً مع فايربيس",
+                changePassLabel: "تغيير كلمة سر الشواهد الموحدة:", newPassPlaceholder: "كلمة السر الجديدة", savePassBtn: "حفظ كلمة السر",
+                coursesAdminLabel: "(رابط / OneDrive) إدارة روابط المقررات وبنك نافس:", saveCoursesBtn: "حفظ روابط المقررات",
+                initiativesAdminLabel: "إدارة روابط المبادرات التعليمية:", saveInitiativesBtn: "حفظ روابط المبادرات",
+                footerBrand: "هند القرني | Hindobia", footerLocation: "بيشة - المملكة العربية السعودية",
+                quoteAuthor: "أ. هند القرني", navBtnNafis: "دخول الاختبارات", navBtnOneDrive: "OneDrive", navBtnInit: "الانتقال للمبادرة"
+            },
+            en: {
+                controlPanel: "Admin Panel", themeBtn: "Theme", navTranquility: "Tranquility", navEvidences: "Evidences",
+                navInitiatives: "Initiatives", navCourses: "Courses & Resources", navCV: "Resume", brand: "Hindobia",
+                teacherTitle: "Pearl Palace", heroSubtitle: "Pearl Palace | Garden of Tales",
+                motto: "«learning environment inspiring hearts.»",
+                cvPrefix: "Ms.", cvName: "Hind Hareesan Ali Al-Qarni", cvRole: "Early Childhood Educator at", cvSchool: "Al-Haysha Early Childhood School - Bisha",
+                cvAdmin: "General Administration of Education in Aseer Region", statYears: "Years of Giving", statHours: "Training Hours", statTech: "Tech Mastered",
+                cardMakerTitle: "Impact Maker & Inspirer", cardPearlTitle: "Jewel of Inspiration", cvInfoTitle: "Personal Info & Mission",
+                cvFullTitle: "Name:", cvFullName: "Ms. Hind Hareesan Ali Al-Qarni", cvRoleTitle: "Role:", cvRoleVal: "Early Childhood Teacher - Al-Haysha School",
+                cvGoalTitle: "Goal:", cvGoalVal: "Instilling values and nurturing creative & critical thinking in early childhood through a safe, motivating environment.",
+                cvEduTitle: "Qualifications & Education Path", edu1Year: "2007:", edu1Val: "Bachelor of Education - Teachers College in Balqarn",
+                edu2Year: "2003:", edu2Val: "High School Certificate - Shaaf Balqarn High School", edu3Year: "2000:", edu3Val: "Intermediate School Certificate - Shaaf Balqarn School",
+                coursesSectionTitle: "Courses, Resources & Nafis Bank", coursesSubTitle: "Content that is constantly being updated",
+                platformsTitle: "Official Educational Platforms", platformsSubTitle: "Direct links to approved ministerial and educational platforms",
+                pMoe: "Ministry of Education", pMadrasati: "Madrasati Platform", pNoor: "Noor System", pIen: "Ien Educational", pFaris: "Faris System",
+                initiativesTitle: "Educational Initiatives & Projects", initiativesSubTitle: "Ongoing interactive projects serving early childhood learning",
+                evidencesTitle: "Evidences & Job Performance", evidencesSubTitle: "Approved performance indicators (Protected)",
+                protectedNotice: "The password must be requested from the administrator.", unlockBtn: "Unlock", passPlaceholder: "Enter Password",
+                tranquilityTitle: "Peace & Tranquility", tranquilitySubTitle: "A spiritual and intellectual space enriching souls and minds",
+                quranTitle: "Holy Quran Channel", quranSub: "«Contemplating the Quran gives life to hearts and tranquility to souls..»",
+                quranBtn: "Watch Live Stream", sunnahTitle: "Prophetic Sunnah Channel", sunnahSub: "«Whoever shines with Sunnah light glows with acceptance..»",
+                sunnahBtn: "Watch Live Stream", wordsTitle: "Good Words Encyclopedia", wordsSub: "«Good words elevate spirits to highest ranks of spiritual closeness..»",
+                wordsBtn: "Visit Good Words", achievementsTitle: "Certificates & Achievements", achievementsSub: "Examples and evidence of professional educational excellence",
+                waPopupText: "You will now be redirected to chat with the designer", waYes: "Yes", waNo: "No", themeModalTitle: "🎨 Select Theme",
+                loginTitle: "🔒 Control Panel & Real-time Sync", userLabel: "Username", passLabel: "Password", loginBtn: "Login",
+                forgotBtn: "Forgot Password?", loginSuccess: "Logged in successfully! Real-time sync active",
+                changePassLabel: "Change Unified Evidence Password:", newPassPlaceholder: "New Password", savePassBtn: "Save Password",
+                coursesAdminLabel: "Manage Courses & Nafis Links (OneDrive / Link):", saveCoursesBtn: "Save Courses Links",
+                initiativesAdminLabel: "Manage Educational Initiatives Links:", saveInitiativesBtn: "Save Initiatives Links",
+                footerBrand: "Hind Al-Qarni | Hindobia", footerLocation: "Bisha - Kingdom of Saudi Arabia",
+                quoteAuthor: "Ms. Hind Al-Qarni", navBtnNafis: "Start Exam", navBtnOneDrive: "OneDrive", navBtnInit: "View Initiative"
+            }
+        };
+
+        // Toast Notification System
+        function showToast(message, isSuccess = true) {
+            const toast = document.getElementById('toastNotification');
+            const toastText = document.getElementById('toastText');
+            const toastIcon = document.getElementById('toastIcon');
+            
+            toastText.innerText = message;
+            toastIcon.className = isSuccess ? "fa-solid fa-circle-check text-[var(--accent-gold)] text-base" : "fa-solid fa-triangle-exclamation text-amber-500 text-base";
+            
+            toast.classList.remove('translate-x-full', 'opacity-0');
+            toast.classList.add('translate-x-0', 'opacity-100');
+            
+            setTimeout(() => {
+                toast.classList.remove('translate-x-0', 'opacity-100');
+                toast.classList.add('translate-x-full', 'opacity-0');
+            }, 3500);
+        }
+
+        window.onload = function() {
+            initPearlPalace3D();
+            renderCertificates();
+        };
+
+        function renderCourses() {
+            const container = document.getElementById('coursesGrid');
+            const isAr = state.lang === 'ar';
+            container.innerHTML = state.courses.map((c, idx) => `
+                <div class="glass-card p-6 rounded-3xl space-y-3 text-center ${c.isNafis ? 'border-2 border-[var(--accent-gold)] bg-[var(--card-sec)]' : ''}">
+                    <div class="w-12 h-12 mx-auto rounded-2xl bg-[var(--card-sec)] flex items-center justify-center text-[var(--accent-gold)] text-xl">
+                        <i class="fa-solid ${c.isNafis ? 'fa-laptop-code' : 'fa-book-open'}"></i>
+                    </div>
+                    <h3 class="font-cairo font-bold text-base text-[var(--text-title)]">${isAr ? c.nameAr : c.nameEn}</h3>
+                    <p class="text-xs text-[var(--text-body)]">${isAr ? c.descAr : c.descEn}</p>
+                    <a href="${c.link || '#'}" target="_blank" class="inline-block px-4 py-1.5 rounded-xl text-xs font-bold ${c.isNafis ? 'bg-[var(--accent-gold)] text-white' : 'bg-[var(--card-sec)] text-[var(--text-title)]'}">
+                        ${c.isNafis ? i18n[state.lang].navBtnNafis : i18n[state.lang].navBtnOneDrive}
+                    </a>
+                </div>
+            `).join('');
+        }
+
+        function renderInitiatives() {
+            const container = document.getElementById('initiativesGrid');
+            const isAr = state.lang === 'ar';
+            container.innerHTML = state.initiatives.map((i, idx) => `
+                <div class="glass-card p-6 rounded-3xl space-y-3 text-center">
+                    <h3 class="font-cairo font-bold text-base text-[var(--text-title)]">${isAr ? i.titleAr : i.titleEn}</h3>
+                    <p class="text-xs text-[var(--text-body)] leading-relaxed">${isAr ? i.descAr : i.descEn}</p>
+                    <a href="${i.link || '#'}" target="_blank" class="inline-block px-4 py-1.5 rounded-xl text-xs font-bold bg-[var(--card-sec)] text-[var(--text-title)]">
+                        ${i18n[state.lang].navBtnInit}
+                    </a>
+                </div>
+            `).join('');
+        }
+
+        function renderCertificates() {
+            const container = document.getElementById('certificatesGrid');
+            const certs = state.certificates || ['cer01.png', 'cer02.png', 'cer03.png', 'cer04.png', 'cer05.png', 'cer06.png', 'cer07.png'];
+            
+            container.innerHTML = certs.map((fileName, idx) => `
+                <div class="glass-card p-4 rounded-2xl space-y-3 relative overflow-hidden group">
+                    <div class="w-full h-36 bg-[var(--card-sec)] rounded-xl flex items-center justify-center border border-[var(--border-color)] overflow-hidden">
+                        <img src="${fileName}" alt="شهادة وإنجاز ${idx+1}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fa-solid fa-award text-4xl text-[var(--accent-gold)] opacity-70\'></i>';">
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderEvidences() {
+            const container = document.getElementById('evidencesGrid');
+            const list = state.lang === 'ar' ? state.evidencesAr : state.evidencesEn;
+            container.innerHTML = list.map(e => `
+                <div class="glass-card p-4 rounded-2xl flex items-center justify-between text-xs font-bold text-[var(--text-title)]">
+                    <span>${e}</span>
+                    <i class="fa-solid ${state.isUnlocked ? 'fa-lock-open text-emerald-500' : 'fa-lock text-[var(--accent-gold)]'}"></i>
+                </div>
+            `).join('');
+        }
+
+        function unlockEvidences() {
+            const val = document.getElementById('evidencePassInput').value;
+            if (val === state.evidencePassword) {
+                state.isUnlocked = true;
+                document.getElementById('lockStateBanner').classList.add('hidden');
+                renderEvidences();
+                showToast(state.lang === 'ar' ? 'تم فك قفل الشواهد بنجاح' : 'Evidences unlocked successfully');
+            } else {
+                showToast(state.lang === 'ar' ? 'كلمة المرور غير صحيحة' : 'Incorrect Password', false);
+            }
+        }
+
+        function triggerEduInspiration() {
+            document.getElementById('eduShapes').classList.add('hidden');
+            document.getElementById('eduBook').classList.remove('hidden');
+            document.getElementById('eduBook').classList.add('flex');
+            const list = state.lang === 'ar' ? eduQuotesAr : eduQuotesEn;
+            showQuote(state.lang === 'ar' ? "شعلة القصر اللؤلؤي" : "Pearl Palace Spark", list[Math.floor(Math.random() * list.length)]);
+        }
+
+        function triggerLifeInspiration() {
+            document.getElementById('lifeShell').classList.add('hidden');
+            document.getElementById('lifePearl').classList.remove('hidden');
+            document.getElementById('lifePearl').classList.add('flex');
+            const list = state.lang === 'ar' ? lifeQuotesAr : lifeQuotesEn;
+            showQuote(state.lang === 'ar' ? "لؤلؤة حديقة الحكايات" : "Tales Garden Pearl", list[Math.floor(Math.random() * list.length)]);
+        }
+
+        function showQuote(title, text) {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            document.getElementById('quoteTag').innerText = `${title} | ${dateStr}`;
+            document.getElementById('quoteText').innerText = `"${text}"`;
+            openModal('inspirationModal');
+        }
+
+        function toggleLanguage() {
+            state.lang = state.lang === 'ar' ? 'en' : 'ar';
+            document.getElementById('langLabel').innerText = state.lang === 'ar' ? 'ENG' : 'عربي';
+            document.getElementById('mobileLangLabel').innerText = state.lang === 'ar' ? 'ENG' : 'عربي';
+            document.documentElement.dir = state.lang === 'ar' ? 'rtl' : 'ltr';
+            
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (i18n[state.lang][key]) el.innerText = i18n[state.lang][key];
+            });
+
+            document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+                const key = el.getAttribute('data-i18n-ph');
+                if (i18n[state.lang][key]) el.placeholder = i18n[state.lang][key];
+            });
+
+            renderCourses();
+            renderInitiatives();
+            renderEvidences();
+            renderCertificates();
+            buildAdminInputs();
+        }
+
+        function setTheme(theme) {
+            const root = document.documentElement;
+            const themes = {
+                hindobia: { bg: '#F7F2EB', card: '#FFFCF8', sec: '#EDE7F0', purple: '#D8C7E8', pink: '#E8C9D2', gold: '#D6B779', title: '#51465A', body: '#82768A', border: '#E5DCE8' },
+                world: { bg: '#F0F9FF', card: '#FFFFFF', sec: '#E0F2FE', purple: '#BAE6FD', pink: '#7DD3FC', gold: '#0284C7', title: '#0C4A6E', body: '#0369A1', border: '#BAE6FD' },
+                pink: { bg: '#FFF0F5', card: '#FFFFFF', sec: '#FCE7F3', purple: '#FBCFE8', pink: '#F472B6', gold: '#DB2777', title: '#831843', body: '#9D174D', border: '#FBCFE8' },
+                fantasy: { bg: '#FAF5FF', card: '#FFFFFF', sec: '#F3E8FF', purple: '#E9D5FF', pink: '#C084FC', gold: '#9333EA', title: '#581C87', body: '#6B21A8', border: '#E9D5FF' },
+                burgundy: { bg: '#FFF1F2', card: '#FFFFFF', sec: '#FFE4E6', purple: '#FECDD3', pink: '#FB7185', gold: '#E11D48', title: '#881337', body: '#9F1239', border: '#FECDD3' },
+                saudi: { bg: '#F0FDF4', card: '#FFFFFF', sec: '#DCFCE7', purple: '#BBF7D0', pink: '#86EFAC', gold: '#16A34A', title: '#064E3B', body: '#166534', border: '#BBF7D0' },
+                spring: { bg: '#F7FEE7', card: '#FFFFFF', sec: '#ECFCCB', purple: '#D9F99D', pink: '#A3E635', gold: '#65A30D', title: '#365314', body: '#3F6212', border: '#D9F99D' },
+                summer: { bg: '#FFFBEB', card: '#FFFFFF', sec: '#FEF3C7', purple: '#FDE68A', pink: '#FBBF24', gold: '#D97706', title: '#78350F', body: '#92400E', border: '#FDE68A' },
+                autumn: { bg: '#FFF7ED', card: '#FFFFFF', sec: '#FFEDD5', purple: '#FED7AA', pink: '#FB923C', gold: '#EA580C', title: '#7C2D12', body: '#9A3412', border: '#FED7AA' },
+                winter: { bg: '#F8FAFC', card: '#FFFFFF', sec: '#E2E8F0', purple: '#CBD5E1', pink: '#94A3B8', gold: '#475569', title: '#0F172A', body: '#334155', border: '#CBD5E1' }
+            };
+
+            const t = themes[theme] || themes.hindobia;
+            root.style.setProperty('--bg-main', t.bg);
+            root.style.setProperty('--card-main', t.card);
+            root.style.setProperty('--card-sec', t.sec);
+            root.style.setProperty('--accent-purple', t.purple);
+            root.style.setProperty('--accent-pink', t.pink);
+            root.style.setProperty('--accent-gold', t.gold);
+            root.style.setProperty('--text-title', t.title);
+            root.style.setProperty('--text-body', t.body);
+            root.style.setProperty('--border-color', t.border);
+
+            closeModal('themeModal');
+        }
+
+        function openWhatsappModal() { openModal('whatsappModal'); }
+        function openModal(id) { document.getElementById(id).classList.remove('opacity-0', 'pointer-events-none'); }
+        function closeModal(id) { document.getElementById(id).classList.add('opacity-0', 'pointer-events-none'); }
+        function toggleMobileMenu() { document.getElementById('mobileMenu').classList.toggle('hidden'); }
+        function showResetNotice() { showToast(state.lang === 'ar' ? 'لاستعادة بيانات دخولكِ، يرجى مراجعة قاعدة بيانات فايربيس.' : 'To reset your credentials, please check Firebase database.', false); }
+
+        function attemptLogin() {
+            const u = document.getElementById('adminUser').value;
+            const p = document.getElementById('adminPass').value;
+            if(u && p) {
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('dashboardControls').classList.remove('hidden');
+                buildAdminInputs();
+                showToast(state.lang === 'ar' ? 'تم تسجيل الدخول بنجاح' : 'Logged in successfully');
+            } else {
+                showToast(state.lang === 'ar' ? 'الرجاء إدخال اسم المستخدم وكلمة المرور' : 'Please enter username and password', false);
+            }
+        }
+
+        function buildAdminInputs() {
+            const coursesContainer = document.getElementById('adminCoursesContainer');
+            const isAr = state.lang === 'ar';
+            coursesContainer.innerHTML = state.courses.map((c, idx) => `
+                <div class="flex items-center gap-2">
+                    <span class="w-32 text-[11px] font-bold text-[var(--text-title)] truncate">${isAr ? c.nameAr : c.nameEn}</span>
+                    <input type="text" id="adminCourseLink_${idx}" value="${c.link || ''}" placeholder="${isAr ? 'رابط OneDrive أو نافس' : 'OneDrive or Nafis link'}" class="w-full px-3 py-1.5 rounded-xl text-xs bg-[var(--card-main)] border border-[var(--border-color)] text-[var(--text-title)] outline-none">
+                </div>
+            `).join('');
+
+            const initiativesContainer = document.getElementById('adminInitiativesContainer');
+            initiativesContainer.innerHTML = state.initiatives.map((i, idx) => `
+                <div class="flex items-center gap-2">
+                    <span class="w-32 text-[11px] font-bold text-[var(--text-title)] truncate">${isAr ? i.titleAr : i.titleEn}</span>
+                    <input type="text" id="adminInitiativeLink_${idx}" value="${i.link || ''}" placeholder="${isAr ? 'رابط المبادرة' : 'Initiative link'}" class="w-full px-3 py-1.5 rounded-xl text-xs bg-[var(--card-main)] border border-[var(--border-color)] text-[var(--text-title)] outline-none">
+                </div>
+            `).join('');
+        }
+
+        function updateEvidencePass() {
+            const newP = document.getElementById('newEvidencePass').value;
+            if(newP) {
+                state.evidencePassword = newP;
+                syncToFirebase();
+                showToast(state.lang === 'ar' ? 'تم تحديث وحفظ كلمة السر بنجاح!' : 'Password updated successfully!');
+            }
+        }
+
+        function saveCoursesLinks() {
+            state.courses.forEach((c, idx) => {
+                const input = document.getElementById(`adminCourseLink_${idx}`);
+                if (input) c.link = input.value;
+            });
+            syncToFirebase();
+            showToast(state.lang === 'ar' ? 'تم حفظ وتحديث روابط المقررات بنجاح!' : 'Courses links saved!');
+        }
+
+        function saveInitiativesLinks() {
+            state.initiatives.forEach((i, idx) => {
+                const input = document.getElementById(`adminInitiativeLink_${idx}`);
+                if (input) i.link = input.value;
+            });
+            syncToFirebase();
+            showToast(state.lang === 'ar' ? 'تم حفظ وتحديث روابط المبادرات بنجاح!' : 'Initiatives links saved!');
+        }
+
+        function syncToFirebase() {
+            if (typeof db !== 'undefined') {
+                db.ref('hindobia_data/').set(state)
+                    .then(() => {
+                        console.log("تم التزامن مع فايربيس بنجاح");
+                    })
+                    .catch((error) => {
+                        console.error("خطأ في التزامن: ", error);
+                    });
+            }
+        }
+
+        // Three.js Background Simulation
+        function initPearlPalace3D() {
+            const canvas = document.getElementById('bg-canvas');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 25;
+
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            const count = 160;
+            const geom = new THREE.BufferGeometry();
+            const pos = new Float32Array(count * 3);
+            for(let i=0; i<count*3; i+=3) {
+                pos[i] = (Math.random() - 0.5) * 55;
+                pos[i+1] = (Math.random() - 0.5) * 55;
+                pos[i+2] = (Math.random() - 0.5) * 35;
+            }
+            geom.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+
+            const mat = new THREE.PointsMaterial({
+                color: 0xD6B779,
+                size: 0.7,
+                transparent: true,
+                opacity: 0.65,
+                blending: THREE.AdditiveBlending
+            });
+            const points = new THREE.Points(geom, mat);
+            scene.add(points);
+
+            const group = new THREE.Group();
+            const crystalGeo = new THREE.IcosahedronGeometry(1.2, 0);
+            const crystalMat = new THREE.MeshBasicMaterial({
+                color: 0xD8C7E8,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.2
+            });
+
+            for(let i=0; i<5; i++) {
+                const mesh = new THREE.Mesh(crystalGeo, crystalMat);
+                mesh.position.set((Math.random() - 0.5) * 35, (Math.random() - 0.5) * 35, (Math.random() - 0.5) * 20);
+                group.add(mesh);
+            }
+            scene.add(group);
+
+            let mouseX = 0, mouseY = 0;
+            window.addEventListener('mousemove', (e) => {
+                mouseX = (e.clientX / window.innerWidth - 0.5) * 0.4;
+                mouseY = (e.clientY / window.innerHeight - 0.5) * 0.4;
+            });
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            function animate() {
+                requestAnimationFrame(animate);
+                points.rotation.y += 0.0009;
+                group.rotation.x += 0.001;
+                group.rotation.y += 0.0015;
+
+                camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
+                camera.position.y += (-mouseY * 5 - camera.position.y) * 0.05;
+                camera.lookAt(scene.position);
+
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+    </script>
+
+    <!-- ================= FIREBASE SDK & REAL-TIME SYNC ================= -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAhAIbNN8TVEm31G7kBH3GyqNKbaQ7WA_U",
+            authDomain: "hindobia-8f170.firebaseapp.com",
+            databaseURL: "https://hindobia-8f170-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "hindobia-8f170",
+            storageBucket: "hindobia-8f170.firebasestorage.app",
+            messagingSenderId: "854772825029",
+            appId: "1:854772825029:web:81a48aa32d38b1f90d29ac"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        db.ref('hindobia_data/').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                state.evidencePassword = data.evidencePassword || state.evidencePassword;
+                if (data.courses) state.courses = data.courses;
+                if (data.initiatives) state.initiatives = data.initiatives;
+                if (data.certificates) state.certificates = data.certificates;
+            } else {
+                syncToFirebase();
+            }
+            renderCourses();
+            renderInitiatives();
+            renderEvidences();
+            renderCertificates();
+            if(document.getElementById('dashboardControls') && !document.getElementById('dashboardControls').classList.contains('hidden')) {
+                buildAdminInputs();
+            }
+        });
+    </script>
+</body>
+</html>
