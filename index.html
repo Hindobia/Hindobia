@@ -568,6 +568,16 @@
 
     <!-- JavaScript Core Script & Firebase Real-time Sync -->
     <script>
+        // دالة مساعدة لإنشاء مصفوفة الشهادات الـ 38 تلقائياً (cer01.png حتى cer38.png)
+        function generateDefaultCertificates() {
+            const certs = [];
+            for (let i = 1; i <= 38; i++) {
+                const numStr = i < 10 ? `0${i}` : `${i}`;
+                certs.push(`cer${numStr}.png`);
+            }
+            return certs;
+        }
+
         let state = {
             lang: 'ar',
             evidencePassword: '123',
@@ -584,7 +594,7 @@
                 { id: 2, titleAr: 'حديقة الحكايات الرقمية', titleEn: 'Digital Tales Garden', descAr: 'تعزيز مهارات القراءة والتلاوة للطفولة المبكرة بأسلوب قصصي.', descEn: 'Enhancing reading and recitation skills through story-based approaches.', link: '#' },
                 { id: 3, titleAr: 'جسور التعلم والتمكين', titleEn: 'Learning & Empowerment Bridges', descAr: 'ربط أوراق العمل والدروس الرقمية المتكاملة عبر OneDrive.', descEn: 'Linking worksheets and integrated digital lessons via OneDrive.', link: '#' }
             ],
-            certificates: ['cer01.png', 'cer02.png', 'cer03.png', 'cer04.png', 'cer05.png', 'cer06.png', 'cer07.png'],
+            certificates: generateDefaultCertificates(),
             evidencesAr: [
                 '1. أداء الواجبات الوظيفية', '2. إعداد وتنفيذ خطة التعلم', '3. الإدارة الصفية',
                 '4. التفاعل مع المجتمع المهني', '5. التفاعل مع أولياء الأمور', '6. التنوع في استراتيجيات التدريس',
@@ -744,13 +754,20 @@
 
         function renderCertificates() {
             const container = document.getElementById('certificatesGrid');
-            const certs = state.certificates || ['cer01.png', 'cer02.png', 'cer03.png', 'cer04.png', 'cer05.png', 'cer06.png', 'cer07.png'];
             
-            container.innerHTML = certs.map((fileName, idx) => `
+            // التأكد من تحميل الـ 38 شهادة كاملاً
+            if (!state.certificates || state.certificates.length < 38) {
+                state.certificates = generateDefaultCertificates();
+            }
+
+            container.innerHTML = state.certificates.map((fileName, idx) => `
                 <div class="glass-card p-4 rounded-2xl space-y-3 relative overflow-hidden group">
-                    <div class="w-full h-36 bg-[var(--card-sec)] rounded-xl flex items-center justify-center border border-[var(--border-color)] overflow-hidden">
-                        <img src="${fileName}" alt="شهادة وإنجاز ${idx+1}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fa-solid fa-award text-4xl text-[var(--accent-gold)] opacity-70\'></i>';">
+                    <div class="w-full h-44 bg-[var(--card-sec)] rounded-xl flex items-center justify-center border border-[var(--border-color)] overflow-hidden relative">
+                        <!-- أيقونة خلفية تظهر في حال تأخر تحميل الصورة دون مسح العنصر -->
+                        <i class="fa-solid fa-award text-3xl text-[var(--accent-gold)] opacity-40 absolute"></i>
+                        <img src="${fileName}" alt="شهادة وإنجاز ${idx+1}" loading="lazy" class="w-full h-full object-cover relative z-10 group-hover:scale-105 transition-transform duration-300" onerror="this.style.opacity='0';">
                     </div>
+                    <p class="text-[11px] font-bold text-center text-[var(--text-title)] truncate">شهادة إنجاز #${idx + 1}</p>
                 </div>
             `).join('');
         }
@@ -1030,7 +1047,9 @@
                 state.evidencePassword = data.evidencePassword || state.evidencePassword;
                 if (data.courses) state.courses = data.courses;
                 if (data.initiatives) state.initiatives = data.initiatives;
-                if (data.certificates) state.certificates = data.certificates;
+                if (data.certificates && data.certificates.length >= 38) {
+                    state.certificates = data.certificates;
+                }
             } else {
                 syncToFirebase();
             }
