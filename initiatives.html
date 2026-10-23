@@ -293,13 +293,18 @@
                     </div>
                 </div>
 
-                <!-- Change Password Section -->
-                <div class="border-t pt-4 border-black/5 p-4 rounded-2xl border bg-black/5">
+                <!-- Change Password Section & Logout Button -->
+                <div class="border-t pt-4 border-black/5 p-4 rounded-2xl border bg-black/5 space-y-3">
                     <h4 class="text-sm font-bold mb-2">🔐 تغيير الرقم السري لوحة التحكم</h4>
                     <div class="flex gap-2">
                         <input type="password" id="newAdminPassword" placeholder="أدخل الرقم السري الجديد..." class="flex-1 px-4 py-2 rounded-xl border text-xs focus:outline-none bg-white">
                         <button type="button" onclick="updateAdminPassword()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-semibold transition">تحديث الرقم السري</button>
                     </div>
+                    <!-- Logout Button -->
+                    <button type="button" onclick="closeAdminModal()" class="w-full bg-rose-600 hover:bg-rose-700 text-white py-2.5 rounded-xl text-xs font-bold transition shadow flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>خروج من لوحة التحكم</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -573,6 +578,7 @@
             document.getElementById('passwordModal').classList.add('hidden');
         };
 
+        // FIXED: Password verification checks ONLY against Firestore stored password (no hardcoded fallback bypass)
         window.verifyPassword = async function(event) {
             event.preventDefault();
             const pass = document.getElementById('adminPasswordInput').value.trim();
@@ -582,7 +588,7 @@
                 const passSnap = await getDoc(passDocRef);
                 const correctPass = passSnap.exists() ? passSnap.data().value : "1234";
 
-                if (pass === correctPass || pass === "1234") {
+                if (pass === correctPass) {
                     closePasswordModal();
                     document.getElementById('adminModal').classList.remove('hidden');
                     resetForm();
@@ -634,7 +640,7 @@
             document.getElementById('projDesc').value = item.desc || '';
             document.getElementById('projLink').value = item.link || '';
             
-            uploadedBase64Image = item.image || "https://placehold.co/600x400/51465A/ffffff?text=المبادرة+The+Initiative";
+            uploadedBase64Image = item.image || "https://placehold.co/600x400/51465A/ffffff?text=المبادرة+التعليمية";
             document.getElementById('imagePreview').src = uploadedBase64Image;
             document.getElementById('imagePreviewContainer').classList.remove('hidden');
             document.getElementById('charCount').textContent = `${item.desc ? item.desc.length : 0} / 300`;
