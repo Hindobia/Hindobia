@@ -350,10 +350,14 @@
                         </p>
                     </div>
 
-                    <div class="pt-4 border-t border-gold/20">
-                        <a href="image.png" target="_blank" class="print-link-visible w-full py-3 px-4 rounded-xl bg-saudi-emerald hover:bg-saudi-light border border-gold/40 text-gold text-xs sm:text-sm font-tajawal font-bold transition duration-200 flex items-center justify-center gap-2 shadow-lg hover:scale-[1.02] active:scale-95">
+                    <div class="pt-4 border-t border-gold/20 flex flex-col gap-2">
+                        <button onclick="openImageModal()" class="w-full py-3 px-4 rounded-xl bg-saudi-emerald hover:bg-saudi-light border border-gold/40 text-gold text-xs sm:text-sm font-tajawal font-bold transition duration-200 flex items-center justify-center gap-2 shadow-lg hover:scale-[1.02] active:scale-95">
                             <i class="fa-solid fa-image text-base text-gold"></i>
                             <span>عرض توثيق الميدان التربوي (الصورة)</span>
+                        </button>
+                        <!-- رابط مباشر مخصص للطباعة يظهر كمرجع نشط -->
+                        <a href="image.png" target="_blank" class="print-link-visible hidden print:block text-center text-xs text-saudi-deep underline">
+                            رابط الصورة: image.png
                         </a>
                     </div>
                 </div>
@@ -415,6 +419,27 @@
         </section>
 
     </main>
+
+    <!-- Modal for Image Viewing (Image Modal) -->
+    <div id="image-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4 no-print">
+        <div class="glass-card max-w-3xl w-full p-5 sm:p-6 relative border-2 border-gold gold-box-glow">
+            <button onclick="closeImageModal()" class="absolute top-4 left-4 text-slate-400 hover:text-gold text-2xl transition z-10">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="font-tajawal font-bold text-base sm:text-lg text-gold mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-image text-gold"></i>
+                <span>توثيق الميدان التربوي</span>
+            </h3>
+            
+            <div class="relative rounded-xl overflow-hidden bg-black/50 border border-gold/30 mb-4 flex items-center justify-center max-h-[75vh]">
+                <img src="image.png" alt="توثيق الميدان التربوي" class="max-h-[70vh] w-auto object-contain rounded-lg">
+            </div>
+
+            <div class="flex justify-between items-center text-xs text-slate-300 border-t border-gold/20 pt-3">
+                <span class="font-sub">صورة توثيقية من الميدان التربوي لتفعيل المادة 34</span>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal for Media Viewing (Video Modal) -->
     <div id="media-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4 no-print">
@@ -566,16 +591,24 @@
             });
         }
 
+        function openImageModal() {
+            document.getElementById('image-modal').classList.remove('hidden');
+        }
+
+        function closeImageModal() {
+            document.getElementById('image-modal').classList.add('hidden');
+        }
+
         function openMediaModal() {
-    const container = document.getElementById('media-container');
-    container.innerHTML = '<iframe class="w-full h-full" src="https://www.youtube.com/embed/ew-gJXYMXTg?autoplay=1&enablejsapi=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
-    document.getElementById('media-modal').classList.remove('hidden');
-}
+            const container = document.getElementById('media-container');
+            container.innerHTML = '<iframe class="w-full h-full" src="https://www.youtube.com/embed/ew-gJXYMXTg?autoplay=1&enablejsapi=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+            document.getElementById('media-modal').classList.remove('hidden');
+        }
 
         function closeMediaModal() {
             document.getElementById('media-modal').classList.add('hidden');
             const container = document.getElementById('media-container');
-            container.innerHTML = ''; // إيقاف وتشغيل الفيديو عند الإغلاق
+            container.innerHTML = '';
         }
 
         window.onload = function() {
