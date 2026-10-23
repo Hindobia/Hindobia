@@ -23,7 +23,6 @@
         .font-cinzel { font-family: 'Cinzel Decorative', serif; }
 
         /* --- Themes Definition --- */
-        /* 1. Hindobia Theme (Pearl Palace) */
         body.theme-hindobia {
             background: linear-gradient(135deg, #F7F2EB 0%, #EDE7F0 50%, #E8C9D2 100%);
             color: #51465A;
@@ -47,7 +46,6 @@
             background-color: #c4a363;
         }
 
-        /* 2. National Theme (Saudi Emerald & Gold) */
         body.theme-national {
             background: linear-gradient(135deg, #f0fdf4 0%, #e6f4ea 50%, #fefce8 100%);
             color: #064e3b;
@@ -71,7 +69,6 @@
             background-color: #054f28;
         }
 
-        /* 3. Burgundy Theme (Deep Wine & Rose Gold) */
         body.theme-burgundy {
             background: linear-gradient(135deg, #fdf8f6 0%, #fae8e6 50%, #f7d7d3 100%);
             color: #4a1525;
@@ -118,20 +115,17 @@
             </div>
             
             <div class="flex items-center gap-3 flex-wrap justify-center">
-                <!-- Return to Main Site -->
                 <a href="https://hindobia.github.io/Hindobia/" target="_blank" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-2xl text-base transition border border-white/20 flex items-center gap-2 shadow-sm font-cinzel tracking-wider hover:scale-105 transform">
                     <i class="fa-solid fa-arrow-right text-xs"></i>
                     <span class="font-bold">Hindobia</span>
                 </a>
 
-                <!-- Theme Switcher Panel -->
                 <div class="flex items-center gap-1 bg-white/10 p-1 rounded-2xl border border-white/20 backdrop-blur-md">
                     <button onclick="switchTheme('hindobia')" id="themeBtnHindobia" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition bg-white/20 text-white shadow-sm">القصر اللؤلؤي</button>
                     <button onclick="switchTheme('national')" id="themeBtnNational" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition text-white/80 hover:text-white">الوطني</button>
                     <button onclick="switchTheme('burgundy')" id="themeBtnBurgundy" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition text-white/80 hover:text-white">البورغندي</button>
                 </div>
 
-                <!-- Admin Button -->
                 <button onclick="openPasswordModal()" class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-2xl text-xs font-semibold transition shadow-sm flex items-center gap-2 border border-white/20">
                     <i class="fa-solid fa-lock-open"></i>
                     <span>إدارة المبادرات</span>
@@ -166,7 +160,6 @@
             </h3>
         </div>
 
-        <!-- Cards Grid -->
         <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <!-- Populated Dynamically -->
         </div>
@@ -300,7 +293,6 @@
                         <input type="password" id="newAdminPassword" placeholder="أدخل الرقم السري الجديد..." class="flex-1 px-4 py-2 rounded-xl border text-xs focus:outline-none bg-white">
                         <button type="button" onclick="updateAdminPassword()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-semibold transition">تحديث الرقم السري</button>
                     </div>
-                    <!-- Logout Button -->
                     <button type="button" onclick="closeAdminModal()" class="w-full bg-rose-600 hover:bg-rose-700 text-white py-2.5 rounded-xl text-xs font-bold transition shadow flex items-center justify-center gap-2">
                         <i class="fa-solid fa-right-from-bracket"></i>
                         <span>خروج من لوحة التحكم</span>
@@ -310,7 +302,7 @@
         </div>
     </div>
 
-    <!-- Custom Elegant Confirm Modal (Replaces Browser confirm) -->
+    <!-- Custom Elegant Confirm Modal -->
     <div id="customConfirmModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="theme-card rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center border">
             <div class="w-12 h-12 accent-badge rounded-2xl mx-auto flex items-center justify-center text-xl mb-3 border text-rose-600">
@@ -337,7 +329,6 @@
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Your Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCiAHWHlkPDx3l2yVpqxH3jTVU-d6n1zfo",
             authDomain: "hind-initiatives.firebaseapp.com",
@@ -352,7 +343,6 @@
         window.initiativesList = [];
         let uploadedBase64Image = "https://placehold.co/600x400/51465A/ffffff?text=المبادرة+التعليمية";
 
-        // Theme Switcher Logic
         window.switchTheme = function(themeName) {
             const body = document.getElementById('mainBody');
             body.className = `min-h-screen flex flex-col theme-${themeName}`;
@@ -383,7 +373,8 @@
                 setupRealtimeListener();
             } catch (error) {
                 console.error("Firebase init error:", error);
-                loadFallbackData();
+                renderCards();
+                renderAdminList();
             }
         }
 
@@ -396,48 +387,13 @@
                     window.initiativesList.push({ id: docSnap.id, ...docSnap.data() });
                 });
 
-                if (window.initiativesList.length === 0) {
-                    seedDefaultData(collectionRef);
-                } else {
-                    renderCards();
-                    renderAdminList();
-                }
+                renderCards();
+                renderAdminList();
             }, (error) => {
                 console.error("Snapshot error:", error);
-                loadFallbackData();
+                renderCards();
+                renderAdminList();
             });
-        }
-
-        async function seedDefaultData(collectionRef) {
-            const defaultItems = [
-                {
-                    title: "مبادرة رفق لتعزيز السلوك الإيجابي",
-                    badge: "الارشاد الطلابي",
-                    date: "15 شعبان 1447 هـ - 3 مارس 2026 م",
-                    image: "https://placehold.co/600x400/51465A/ffffff?text=مبادرة+رفق",
-                    desc: "مشروع تربوي يهدف إلى خفض العنف المدرسي وتعزيز القيم السلوكية الحميدة لدى طالبات الصفوف الأولية بمنطقة عسير من خلال أنشطة تفاعلية متميزة.",
-                    link: "https://hindobia.github.io/Hindobia/"
-                }
-            ];
-            for (const item of defaultItems) {
-                await addDoc(collectionRef, item);
-            }
-        }
-
-        function loadFallbackData() {
-            window.initiativesList = [
-                {
-                    id: "1",
-                    title: "مبادرة رفق لتعزيز السلوك الإيجابي",
-                    badge: "الارشاد الطلابي",
-                    date: "1447 هـ - 2026 م",
-                    image: "https://placehold.co/600x400/51465A/ffffff?text=مبادرة+رفق",
-                    desc: "مشروع تربوي يهدف إلى خفض العنف المدرسي وتعزيز القيم السلوكية الحميدة لدى طالبات الصفوف الأولية بمنطقة عسير.",
-                    link: "https://hindobia.github.io/Hindobia/"
-                }
-            ];
-            renderCards();
-            renderAdminList();
         }
 
         window.renderCards = function() {
@@ -448,7 +404,7 @@
                 grid.innerHTML = `
                     <div class="col-span-full text-center py-12 theme-card rounded-3xl border border-dashed">
                         <i class="fa-solid fa-folder-open text-3xl opacity-40 mb-2"></i>
-                        <p class="opacity-60 text-xs">لا توجد مبادرات مسجلة حالياً.</p>
+                        <p class="opacity-60 text-xs">لا توجد مبادرات مسجلة حالياً. استخدم لوحة الإدارة لإضافة أول مبادرة.</p>
                     </div>
                 `;
                 return;
@@ -459,7 +415,6 @@
                 cardEl.className = `perspective-1000 min-h-[420px] h-auto w-full cursor-pointer group`;
                 cardEl.innerHTML = `
                     <div class="relative w-full h-full transform-style-3d shadow-sm hover:shadow-xl rounded-3xl transition-all duration-500 theme-card border" id="card-${index}" onclick="flipCard(${index})">
-                        <!-- Front Face -->
                         <div class="absolute inset-0 backface-hidden rounded-3xl overflow-hidden flex flex-col justify-between">
                             <div>
                                 <div class="relative h-48 overflow-hidden bg-black/5">
@@ -483,7 +438,6 @@
                             </div>
                         </div>
 
-                        <!-- Back Face (No Scrollbar) -->
                         <div class="absolute inset-0 backface-hidden rotate-y-180 bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-3xl p-6 flex flex-col justify-between shadow-inner">
                             <div class="flex-grow flex flex-col justify-start">
                                 <div class="flex justify-between items-center mb-3 border-b border-white/10 pb-2">
@@ -578,7 +532,6 @@
             document.getElementById('passwordModal').classList.add('hidden');
         };
 
-        // FIXED: Password verification checks ONLY against Firestore stored password (no hardcoded fallback bypass)
         window.verifyPassword = async function(event) {
             event.preventDefault();
             const pass = document.getElementById('adminPasswordInput').value.trim();
