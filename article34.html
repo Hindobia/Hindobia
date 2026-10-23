@@ -567,10 +567,10 @@
         }
 
         function openMediaModal() {
-            const container = document.getElementById('media-container');
-            container.innerHTML = '<iframe class="w-full h-full" src="https://www.youtube.com/embed/ew-gJXYMXTg?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
-            document.getElementById('media-modal').classList.remove('hidden');
-        }
+    const container = document.getElementById('media-container');
+    container.innerHTML = '<iframe class="w-full h-full" src="https://www.youtube.com/embed/ew-gJXYMXTg?autoplay=1&enablejsapi=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+    document.getElementById('media-modal').classList.remove('hidden');
+}
 
         function closeMediaModal() {
             document.getElementById('media-modal').classList.add('hidden');
