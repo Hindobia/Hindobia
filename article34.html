@@ -182,7 +182,6 @@
             .print-text-dark {
                 color: #1e293b !important;
             }
-            /* إظهار الروابط بوضوح عند الطباعة */
             a.print-link-visible {
                 color: #004D25 !important;
                 text-decoration: underline !important;
@@ -275,9 +274,10 @@
         <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6 sm:mb-8">
             <!-- Profile Card -->
             <div class="glass-card p-6 lg:col-span-4 flex flex-col justify-center items-center text-center border-t-4 border-t-gold">
-                <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-gold p-1 mb-4 relative group shadow-xl">
-                    <img id="teacher-avatar" src="Icon.jpeg" alt="صورة المعلمة أ. هند القرني" class="w-full h-full object-cover rounded-full">
-                </div>
+                <!-- Profile Avatar linked to Hindobia Home -->
+                <a href="https://hindobia.github.io/Hindobia/" class="block w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-gold p-1 mb-4 relative group shadow-xl hover:scale-105 transition duration-300" title="الانتقال إلى موقع Hindobia">
+                    <img id="teacher-avatar" src="icon.png" alt="صورة المعلمة أ. هند القرني" class="w-full h-full object-cover rounded-full">
+                </a>
                 
                 <h2 class="font-tajawal font-extrabold text-lg sm:text-xl text-gold" id="teacher-name">أ. هند القرني</h2>
                 <p class="text-xs sm:text-sm text-slate-300 font-sub mt-1">معلمة طفولة مبكرة | أم واعية</p>
@@ -302,7 +302,7 @@
                         <h2 class="font-tajawal font-extrabold text-lg sm:text-xl text-gold">منطلقات المبادرة والغرس الإيماني</h2>
                     </div>
                     <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-sub mb-4 text-justify print-text-dark">
-                        انطلاقاً من القول الحق: <span class="font-almarai text-gold-light font-bold text-sm sm:text-base">﴿وَإِنَّ هٰذِهِ أُمَّتُكُم أُمَّةً واحِدَةً وَأَنَا رَبُّكُم فَاتَّقُونِ﴾</span>، ومن واقع تخصصي الشرعي في علوم القرآن الكريم، أؤمن أن **الدفاع عن الوطن لا يبدأ فقط في ميادين الشرف، بل يبدأ من مهد الطفولة** بغرس العقيدة الصحيحة والولاء الصادق في نفوس النشء.
+                        انطلاقاً من القول الحق: <span class="font-almarai text-gold-light font-bold text-sm sm:text-base">﴿وَإِنَّ هٰذِهِ أُمَّتُكُم أُمَّةً واحِدَةً وَأَنَا رَبُّكُم فَاتَّقُونِ﴾</span>، ومن واقع تخصصي الشرعي في علوم القرآن الكريم، أؤمن أن **الدفاع عن الوطن لا يبدأ فقط في ميادين الشرف، بل يبدأ من مهد الطفولة** بغرس العقيدة الصحيحة والولاء الصادق في نفوس النشء.
                     </p>
                     <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-sub text-justify print-text-dark">
                         بصفتي **أمّاً** تصنع الجيل، و**معلمةً** تُربي على القرآن، جاءت هذه المبادرة لتجسيد المادة (34) عملياً؛ بربط مفهوم "حماية الوطن" بمرتكزه الأصيل: <span class="text-gold font-bold">الاعتزاز بالعقيدة الإسلامية، وطاعة ولاة الأمر، والحفاظ على أمن المجتمع واستقراره</span>.
@@ -351,7 +351,7 @@
                     </div>
 
                     <div class="pt-4 border-t border-gold/20">
-                        <a href="image.jpeg" target="_blank" class="print-link-visible w-full py-3 px-4 rounded-xl bg-saudi-emerald hover:bg-saudi-light border border-gold/40 text-gold text-xs sm:text-sm font-tajawal font-bold transition duration-200 flex items-center justify-center gap-2 shadow-lg hover:scale-[1.02] active:scale-95">
+                        <a href="image.png" target="_blank" class="print-link-visible w-full py-3 px-4 rounded-xl bg-saudi-emerald hover:bg-saudi-light border border-gold/40 text-gold text-xs sm:text-sm font-tajawal font-bold transition duration-200 flex items-center justify-center gap-2 shadow-lg hover:scale-[1.02] active:scale-95">
                             <i class="fa-solid fa-image text-base text-gold"></i>
                             <span>عرض توثيق الميدان التربوي (الصورة)</span>
                         </a>
@@ -428,7 +428,7 @@
             </h3>
             
             <div class="relative aspect-video rounded-xl overflow-hidden bg-black border border-gold/30 mb-4 flex items-center justify-center" id="media-container">
-                <iframe class="w-full h-full" src="https://www.youtube.com/embed/ew-gJXYMXTg?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <!-- سيتم تحميل الفيديو ديناميكياً عند الضغط على زر المشاهدة لمنع التشغيل التلقائي المسبق -->
             </div>
 
             <div class="flex justify-between items-center text-xs text-slate-300 border-t border-gold/20 pt-3">
@@ -567,11 +567,15 @@
         }
 
         function openMediaModal() {
+            const container = document.getElementById('media-container');
+            container.innerHTML = '<iframe class="w-full h-full" src="https://www.youtube.com/embed/ew-gJXYMXTg?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
             document.getElementById('media-modal').classList.remove('hidden');
         }
 
         function closeMediaModal() {
             document.getElementById('media-modal').classList.add('hidden');
+            const container = document.getElementById('media-container');
+            container.innerHTML = ''; // إيقاف وتشغيل الفيديو عند الإغلاق
         }
 
         window.onload = function() {
