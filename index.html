@@ -899,10 +899,16 @@
             const u = document.getElementById('adminUser').value;
             const p = document.getElementById('adminPass').value;
             if(u && p) {
-                document.getElementById('loginForm').classList.add('hidden');
-                document.getElementById('dashboardControls').classList.remove('hidden');
-                buildAdminInputs();
-                showToast(state.lang === 'ar' ? 'تم تسجيل الدخول بنجاح' : 'Logged in successfully');
+                firebase.auth().signInWithEmailAndPassword(u, p)
+                    .then(() => {
+                        document.getElementById('loginForm').classList.add('hidden');
+                        document.getElementById('dashboardControls').classList.remove('hidden');
+                        buildAdminInputs();
+                        showToast(state.lang === 'ar' ? 'تم تسجيل الدخول وتفعيل التزامن بنجاح' : 'Logged in successfully');
+                    })
+                    .catch((error) => {
+                        showToast(state.lang === 'ar' ? 'اسم المستخدم أو كلمة المرور غير صحيحة' : 'Invalid credentials', false);
+                    });
             } else {
                 showToast(state.lang === 'ar' ? 'الرجاء إدخال اسم المستخدم وكلمة المرور' : 'Please enter username and password', false);
             }
@@ -1044,6 +1050,7 @@
     <!-- ================= FIREBASE SDK & REAL-TIME SYNC ================= -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 
     <script>
         const firebaseConfig = {
