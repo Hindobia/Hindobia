@@ -596,11 +596,18 @@
             ],
             certificates: generateDefaultCertificates(),
             evidencesAr: [
-                '1. أداء الواجبات الوظيفية', '2. إعداد وتنفيذ خطة التعلم', '3. الإدارة الصفية',
-                '4. التفاعل مع المجتمع المهني', '5. التفاعل مع أولياء الأمور', '6. التنوع في استراتيجيات التدريس',
-                '7. تحسين نتائج المتعلمين', '8. تحليل نتائج المتعلمين وتشخيص مستوياتهم', '9. تنوع أساليب التقويم',
-                '10. تهيئة البيئة التعليمية', '11. توظيف التقنيات ووسائل التعلم المناسبة'
-            ],
+    { name: '1. أداء الواجبات الوظيفية', link: 'https://asrgirls-my.sharepoint.com/:f:/g/personal/t165922_asrg_moe_gov_sa/IgCKZ7kUOGLiSI7it7JF6I-lAZF-E8dm3WPyn0x0TLzskK8?e=gfZwzh' },
+    { name: '2. إعداد وتنفيذ خطة التعلم', link: 'https://asrgirls-my.sharepoint.com/:f:/g/personal/t165922_asrg_moe_gov_sa/IgDP7Dy20lXtSYWMBibRhOS8ASvI1jxyB2Slfa8GVYPj7eE?e=HKUs3G' },
+    { name: '3. الإدارة الصفية', link: 'https://asrgirls-my.sharepoint.com/:f:/g/personal/t165922_asrg_moe_gov_sa/IgAFNPtDYghyQYIxfh1y8K2vAfYOx_IkXecfKTI33O5-Iww?e=3e0o3E' },
+    { name: '4. التفاعل مع المجتمع المهني', link: 'https://asrgirls-my.sharepoint.com/:f:/g/personal/t165922_asrg_moe_gov_sa/IgBFByKVkdBMTbhIFo1ndhmzAWviKj_pm8Z5M5NEaXTsYLs?e=7fLaU4' },
+    { name: '5. التفاعل مع أولياء الأمور', link: 'https://asrgirls-my.sharepoint.com/:f:/g/personal/t165922_asrg_moe_gov_sa/IgAlyWeAZ5HVQ5SYtfj9Fim-AYeSfqXQjCG3joeNfx1WuUA?e=ilZQf1' },
+    { name: '6. التنوع في استراتيجيات التدريس', link: 'https://asrgirls-my.sharepoint.com/:f:/g/personal/t165922_asrg_moe_gov_sa/IgD6C2hwGmqJQ7HoAUtrZ0prAZ-PBuLZK5txsUf7T4Aj4PA?e=ASUKh0' },
+    { name: '7. تحسين نتائج المتعلمين', link: 'https://asrgirls-my.sharepoint.com/:f:/g/personal/t165922_asrg_moe_gov_sa/IgA2rYbn00VXRqs2_YUkQxCzATkUECLtyM1n8d-Okm_he6A?e=hPq8zX' },
+    { name: '8. تحليل نتائج المتعلمين وتشخيص مستوياتهم', link: 'https://asrgirls-my.sharepoint.com/:f:/g/personal/t165922_asrg_moe_gov_sa/IgDnSWzGyC6fRrkypjL8xE7KARyC4VeGfHrhDJRvJJGFiQY?e=Q1WLlt' },
+    { name: '9. تنوع أساليب التقويم', link: 'https://asrgirls-my.sharepoint.com/:f:/g/personal/t165922_asrg_moe_gov_sa/IgDZl_HDdVD8QKmoiXmJwaaOAeUa1lCN-1deT7lIyZII2Ow?e=HNfYh9' },
+    { name: '10. تهيئة البيئة التعليمية', link: 'https://asrgirls-my.sharepoint.com/:f:/g/personal/t165922_asrg_moe_gov_sa/IgBSimk_a8FbRI1d3p1xtEYKAcLarWgUR-88ErJLFKNEfhw?e=Fc15IR' },
+    { name: '11. توظيف التقنيات ووسائل التعلم المناسبة', link: 'https://asrgirls-my.sharepoint.com/:f:/g/personal/t165922_asrg_moe_gov_sa/IgDt2FpzukzSQaCECH3-4n3cAZyQVfmvn8miRXu41P-IeDE?e=UqNTVD' }
+],
             evidencesEn: [
                 '1. Performance of Job Duties', '2. Preparing & Executing Learning Plans', '3. Classroom Management',
                 '4. Professional Community Engagement', '5. Parental Communication & Interaction', '6. Diversity of Teaching Strategies',
@@ -790,16 +797,28 @@
             }, 2000);
         }
 
-        function renderEvidences() {
-            const container = document.getElementById('evidencesGrid');
-            const list = state.lang === 'ar' ? state.evidencesAr : state.evidencesEn;
-            container.innerHTML = list.map(e => `
-                <div class="glass-card p-4 rounded-2xl flex items-center justify-between text-xs font-bold text-[var(--text-title)]">
-                    <span>${e}</span>
-                    <i class="fa-solid ${state.isUnlocked ? 'fa-lock-open text-emerald-500' : 'fa-lock text-[var(--accent-gold)]'}"></i>
-                </div>
-            `).join('');
+function renderEvidences() {
+    const container = document.getElementById('evidencesGrid');
+    const list = state.lang === 'ar' ? state.evidencesAr : state.evidencesEn;
+    
+    container.innerHTML = list.map(e => `
+        <div onclick="handleEvidenceClick('${e.link}')" class="glass-card p-4 rounded-2xl flex items-center justify-between text-xs font-bold text-[var(--text-title)] cursor-pointer hover:border-[var(--accent-gold)] transition-all">
+            <span>${e.name}</span>
+            <i class="fa-solid ${state.isUnlocked ? 'fa-arrow-up-right-from-square text-emerald-500' : 'fa-lock text-[var(--accent-gold)]'}"></i>
+        </div>
+    `).join('');
+}
+function handleEvidenceClick(link) {
+    if (state.isUnlocked) {
+        if (link && link !== '#' && !link.includes('رابط_ون_درايف')) {
+            window.open(link, '_blank');
+        } else {
+            showToast(state.lang === 'ar' ? 'عذراً، يجيب وضع رابط OneDrive الصحيح لهذا الشاهد' : 'Please provide a valid link', false);
         }
+    } else {
+        showToast(state.lang === 'ar' ? 'القفل مغلق! يرجى إدخال كلمة المرور أولاً لفتح الشواهد' : 'Please unlock evidences first', false);
+    }
+}
 
         function unlockEvidences() {
             const val = document.getElementById('evidencePassInput').value;
