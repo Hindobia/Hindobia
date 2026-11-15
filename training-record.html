@@ -276,7 +276,7 @@
                 <div class="flex items-start justify-between">
                     <div>
                         <p class="text-xs font-semibold opacity-75 mb-1">السنوات التدريبية</p>
-                        <h2 id="kpi-years" class="text-2xl sm:text-3xl font-extrabold">+</h2>
+                        <h2 id="kpi-years" class="text-2xl sm:text-3xl font-extrabold">18</h2>
                         <p class="text-[11px] opacity-60 mt-1">تحديث مستمر ...</p>
                     </div>
                     <div class="w-11 h-11 rounded-2xl bg-amber-600/10 text-amber-700 flex items-center justify-center text-lg shrink-0">
@@ -854,8 +854,7 @@
             document.getElementById('kpi-courses').textContent = filtered.length;
             document.getElementById('kpi-hours').textContent = totalHours;
             document.getElementById('kpi-approved').textContent = filtered.filter(c => c.status === 'معتمد').length;
-            document.getElementById('kpi-years').textContent = new Set(filtered.map(c => c.year)).size+3;
-
+            document.getElementById('kpi-years').textContent = "+18";
             const container = document.getElementById('results-container');
             if (filtered.length === 0) {
                 container.innerHTML = `<div class="glass-card rounded-3xl p-12 text-center"><p class="text-sm font-bold">لا توجد دورات مطابقة لخيارات البحث</p></div>`;
