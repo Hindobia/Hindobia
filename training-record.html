@@ -96,6 +96,26 @@
                 break-inside: avoid;
             }
         }
+        /* تنسيقات التجاوب مع الشاشات المختلفة والطباعة */
+        @media print {
+            .no-print, nav, header button, #burgerDropdown {
+                display: none !important;
+            }
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
+            .glass-card, .glass-card {
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+                break-inside: avoid;
+            }
+        }
+
+        .responsive-scroll {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased">
@@ -141,22 +161,47 @@
                     </div>
                 </div>
 
-                <!-- Action Buttons -->
-                <div class="flex flex-wrap items-center gap-2.5">
-                    <button onclick="openPasswordModal()" class="px-4 py-2 rounded-2xl bg-white/20 hover:bg-white/30 text-white text-xs sm:text-sm font-semibold transition flex items-center gap-2 backdrop-blur-sm cursor-pointer border border-white/20">
-                        <i class="fa-solid fa-lock-open text-amber-300"></i>
-                        <span>لوحة التحكم</span>
-                    </button>
-                    <button onclick="exportToExcel()" class="px-4 py-2 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs sm:text-sm font-semibold transition flex items-center gap-2 backdrop-blur-sm cursor-pointer">
-                        <i class="fa-solid fa-file-excel text-emerald-300"></i>
-                        <span>تصدير جدول Excel</span>
-                    </button>
-                    <button onclick="printReport()" class="px-4 py-2 rounded-2xl btn-primary font-bold text-xs sm:text-sm shadow-lg transition flex items-center gap-2 cursor-pointer">
-                        <i class="fa-solid fa-print"></i>
-                        <span>طباعة تقرير / PDF</span>
-                    </button>
+<!-- Action Buttons with Burger Dropdown -->
+                <div class="flex items-center gap-2.5">
+                    <!-- زر البرقر المنسدل -->
+                    <div class="relative inline-block text-right no-print" id="burgerMenuContainer">
+                        <button onclick="toggleTrainingMenu()" type="button" class="p-2.5 rounded-2xl bg-white/20 hover:bg-white/30 text-white border border-white/20 text-xs sm:text-sm font-semibold transition flex items-center gap-2 backdrop-blur-sm cursor-pointer" aria-label="القائمة">
+                            <i class="fa-solid fa-bars text-amber-300 text-base"></i>
+                            <span class="hidden sm:inline">القائمة</span>
+                        </button>
+
+                        <!-- محتوى القائمة -->
+                        <div id="burgerDropdown" class="hidden absolute left-0 mt-2 w-60 rounded-2xl bg-[#FFFCF8] shadow-2xl border border-[#D6B779] z-50 overflow-hidden transition-all text-[#51465A]">
+                            <div class="py-2 divide-y divide-[#E5DCE8] text-xs font-bold">
+                                
+                                <!-- 1. لوحة التحكم -->
+                                <button onclick="openPasswordModal(); toggleTrainingMenu();" class="w-full text-right px-4 py-3 hover:bg-[#EDE7F0] flex items-center gap-3 transition-colors cursor-pointer">
+                                    <span class="w-7 h-7 rounded-lg bg-[#EDE7F0] text-[#D6B779] flex items-center justify-center">
+                                        <i class="fa-solid fa-lock-open"></i>
+                                    </span>
+                                    <span>لوحة التحكم</span>
+                                </button>
+
+                                <!-- 2. تصدير جدول Excel -->
+                                <button onclick="exportToExcel(); toggleTrainingMenu();" class="w-full text-right px-4 py-3 hover:bg-[#EDE7F0] flex items-center gap-3 transition-colors cursor-pointer">
+                                    <span class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                                        <i class="fa-solid fa-file-excel"></i>
+                                    </span>
+                                    <span>تصدير جدول Excel</span>
+                                </button>
+
+                                <!-- 3. طباعة تقرير / PDF -->
+                                <button onclick="printReport(); toggleTrainingMenu();" class="w-full text-right px-4 py-3 hover:bg-[#EDE7F0] flex items-center gap-3 transition-colors cursor-pointer">
+                                    <span class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
+                                        <i class="fa-solid fa-print"></i>
+                                    </span>
+                                    <span>طباعة تقرير / PDF</span>
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
             <!-- Teacher Profile Info -->
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -1050,7 +1095,20 @@
             toast.classList.remove('-translate-y-24', 'opacity-0');
             setTimeout(() => toast.classList.add('-translate-y-24', 'opacity-0'), 3500);
         }
+// 1. فتح وإغلاق قائمة البرقر
+        function toggleTrainingMenu() {
+            const dropdown = document.getElementById('burgerDropdown');
+            dropdown.classList.toggle('hidden');
+        }
 
+        // إغلاق القائمة تلقائياً عند النقر خارجها
+        window.addEventListener('click', function(e) {
+            const container = document.getElementById('burgerMenuContainer');
+            const dropdown = document.getElementById('burgerDropdown');
+            if (container && dropdown && !container.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
         window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
