@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سجل التطوير المهني | أ. هند حريسن علي القرني - Hindobia</title>
+    
+    <!-- Google Fonts: Alexandria & Cinzel Decorative -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600;700&family=Cinzel+Decorative:wght@600;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- SheetJS for Real Excel (.xlsx) Export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Alexandria', sans-serif;
+            background: linear-gradient(135deg, #F7F2EB 0%, #EDE7F0 50%, #E8C9D2 100%);
+            color: #51465A;
+            min-height: 100vh;
+        }
+
+        .font-cinzel { font-family: 'Cinzel Decorative', serif; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F7F2EB;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D8C7E8;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #51465A;
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: rgba(255, 252, 248, 0.90);
+            backdrop-filter: blur(12px);
+            border: 1px solid #E5DCE8;
+            box-shadow: 0 10px 30px -10px rgba(81, 70, 90, 0.08);
+        }
+
+        .hero-header {
+            background: linear-gradient(135deg, #51465A 0%, #3a3242 100%);
+        }
+
+        .btn-primary {
+            background-color: #D6B779;
+            color: #51465A;
+        }
+        .btn-primary:hover {
+            background-color: #c4a363;
+        }
+
+        .course-card {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .course-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 28px -10px rgba(81, 70, 90, 0.14);
+            border-color: #D8C7E8;
+        }
+
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 12mm;
+            }
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            .glass-card, .course-card {
+                box-shadow: none !important;
+                border: 1px solid #cbd5e1 !important;
+                background: #ffffff !important;
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <!-- Prominent Top/Bottom Toast Notification (High z-index above modals) -->
+    <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 z-[120] transform -translate-y-24 opacity-0 transition-all duration-300 pointer-events-none no-print">
+        <div class="bg-[#51465A] text-white px-6 py-3.5 rounded-2xl shadow-2xl border-2 border-[#D6B779] flex items-center gap-3 text-xs sm:text-sm font-bold">
+            <i class="fa-solid fa-circle-check text-[#D6B779] text-lg"></i>
+            <span id="toast-message">تم تنفيذ العملية بنجاح</span>
+        </div>
+    </div>
+
+    <!-- Print-Only Formal Official Header -->
+    <div class="hidden print-only border-b-2 border-[#51465A] pb-4 mb-6">
+        <div class="flex justify-between items-center">
+            <div>
+                <p class="text-xs text-slate-600 font-bold">المملكة العربية السعودية — وزارة التعليم</p>
+                <p class="text-xs text-slate-600">الإدارة العامة للتعليم بمنطقة عسير (بيشة)</p>
+                <p class="text-xs text-slate-600">مدرسة الهيشة للطفولة المبكرة</p>
+            </div>
+            <div class="text-center">
+                <h1 class="text-xl font-extrabold text-[#51465A]">تقرير سجل التطوير المهني والدورات التدريبية</h1>
+                <p class="text-xs text-slate-500 mt-1" id="print-filter-subtitle">تقرير شامل لجميع السنوات</p>
+            </div>
+            <div class="text-left">
+                <p class="font-cinzel text-sm text-[#51465A] font-bold">Hindobia</p>
+                <p class="text-xs text-slate-500" id="print-date"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Header -->
+    <header class="hero-header text-white relative overflow-hidden border-b-4 border-[#D6B779] shadow-lg no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10 relative z-10">
+            <div class="flex flex-wrap items-center justify-between gap-4 pb-6 mb-6 border-b border-white/10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-amber-300 shadow-inner">
+                        <i class="fa-solid fa-award text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="font-cinzel text-amber-300 tracking-wider text-base sm:text-lg block leading-none">Hindobia</span>
+                        <span class="text-[11px] text-white/70">الإنجاز والتطوير المهني</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <button onclick="openPasswordModal()" class="px-4 py-2 rounded-2xl bg-white/20 hover:bg-white/30 text-white text-xs sm:text-sm font-semibold transition flex items-center gap-2 backdrop-blur-sm cursor-pointer border border-white/20">
+                        <i class="fa-solid fa-lock-open text-amber-300"></i>
+                        <span>لوحة التحكم</span>
+                    </button>
+                    <button onclick="exportToExcel()" class="px-4 py-2 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs sm:text-sm font-semibold transition flex items-center gap-2 backdrop-blur-sm cursor-pointer">
+                        <i class="fa-solid fa-file-excel text-emerald-300"></i>
+                        <span>تصدير جدول Excel</span>
+                    </button>
+                    <button onclick="printReport()" class="px-4 py-2 rounded-2xl btn-primary font-bold text-xs sm:text-sm shadow-lg transition flex items-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-print"></i>
+                        <span>طباعة تقرير / PDF</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Teacher Profile Info -->
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/20 text-amber-300 text-xs font-medium mb-3">
+                        <i class="fa-solid fa-sparkles text-[10px]"></i>
+                        <span>سجل النمو المهني المعتمد — نظام فارس</span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight mb-2">
+                        أ. هند حريسن علي القرني
+                    </h1>
+                    <p class="text-white/80 text-sm font-medium flex flex-wrap items-center gap-x-4 gap-y-1.5">
+                        <span class="inline-flex items-center gap-1.5">
+                            <i class="fa-solid fa-chalkboard-user text-amber-300"></i>
+                            معلمة | ممارس
+                        </span>
+                        <span class="hidden sm:inline text-white/30">|</span>
+                        <span class="inline-flex items-center gap-1.5">
+                            <i class="fa-solid fa-school text-amber-300"></i>
+                            مدرسة الهيشة للطفولة المبكرة
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        <!-- KPI Dashboard Cards -->
+        <section class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 no-print">
+            <div class="glass-card rounded-3xl p-5 relative overflow-hidden">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-xs font-semibold opacity-75 mb-1">إجمالي البرامج والدورات</p>
+                        <h2 id="kpi-courses" class="text-2xl sm:text-3xl font-extrabold">58</h2>
+                        <p class="text-[11px] opacity-60 mt-1" id="kpi-courses-sub">من أصل 58 برنامجاً</p>
+                    </div>
+                    <div class="w-11 h-11 rounded-2xl bg-[#51465A]/10 text-[#51465A] flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-3xl p-5 relative overflow-hidden">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-xs font-semibold opacity-75 mb-1">إجمالي الساعات التدريبية</p>
+                        <h2 id="kpi-hours" class="text-2xl sm:text-3xl font-extrabold text-[#831843]">348</h2>
+                        <p class="text-[11px] opacity-60 mt-1">ساعة موثقة</p>
+                    </div>
+                    <div class="w-11 h-11 rounded-2xl bg-[#831843]/10 text-[#831843] flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-3xl p-5 relative overflow-hidden">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-xs font-semibold opacity-75 mb-1">البرامج المعتمدة</p>
+                        <h2 id="kpi-approved" class="text-2xl sm:text-3xl font-extrabold text-emerald-700">54</h2>
+                        <p class="text-[11px] opacity-60 mt-1">بواقع 341 ساعة معتمدة</p>
+                    </div>
+                    <div class="w-11 h-11 rounded-2xl bg-emerald-600/10 text-emerald-700 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-3xl p-5 relative overflow-hidden">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-xs font-semibold opacity-75 mb-1">السنوات التدريبية</p>
+                        <h2 id="kpi-years" class="text-2xl sm:text-3xl font-extrabold">15</h2>
+                        <p class="text-[11px] opacity-60 mt-1">سنة هجرية نشطة</p>
+                    </div>
+                    <div class="w-11 h-11 rounded-2xl bg-amber-600/10 text-amber-700 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-calendar-days"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Yearly Hours Chart -->
+        <section class="glass-card rounded-3xl p-5 sm:p-6 no-print">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5">
+                <div>
+                    <h3 class="text-base sm:text-lg font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-chart-column text-amber-600"></i>
+                        <span>التوزيع الزمني للساعات التدريبية حسب السنوات (1432 – 1448 هـ)</span>
+                    </h3>
+                    <p class="text-xs opacity-70 mt-0.5">انقري على أي عمود سنة لتصفية الدورات الخاصة بها مباشرة</p>
+                </div>
+                <button id="clear-chart-filter" onclick="setYearFilter('all')" class="hidden text-xs font-semibold text-[#51465A] bg-white px-3 py-1.5 rounded-xl border transition self-start cursor-pointer">
+                    <i class="fa-solid fa-filter-circle-xmark ml-1"></i> عرض جميع السنوات
+                </button>
+            </div>
+            <div class="overflow-x-auto pb-2">
+                <div id="yearly-chart" class="min-w-[680px] h-48 flex items-end justify-between gap-2 pt-8 px-2 border-b border-black/5"></div>
+            </div>
+        </section>
+
+        <!-- Filtering & Search -->
+        <section class="glass-card rounded-3xl p-5 sm:p-6 space-y-5 no-print">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                <div class="md:col-span-5 relative">
+                    <label class="block text-xs font-bold mb-1.5">بحث في السجل التدريبي</label>
+                    <div class="relative">
+                        <input type="text" id="search-input" placeholder="ابحثي باسم الدورة، الجهة، أو المجال..." 
+                            class="w-full pl-10 pr-10 py-2.5 rounded-2xl bg-white border border-black/10 focus:outline-none focus:ring-2 text-sm transition">
+                        <i class="fa-solid fa-magnifying-glass absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <button id="clear-search" onclick="clearSearch()" class="hidden absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-rose-500 text-sm cursor-pointer">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-bold mb-1.5">السنة الهجرية</label>
+                    <select id="year-select" class="w-full px-3 py-2.5 rounded-2xl bg-white border border-black/10 focus:outline-none text-sm font-medium cursor-pointer">
+                        <option value="all">جميع السنوات</option>
+                    </select>
+                </div>
+
+                <div class="md:col-span-3">
+                    <label class="block text-xs font-bold mb-1.5">نوع النشاط التدريبي</label>
+                    <select id="type-select" class="w-full px-3 py-2.5 rounded-2xl bg-white border border-black/10 focus:outline-none text-sm font-medium cursor-pointer">
+                        <option value="all">جميع الأنواع</option>
+                    </select>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-bold mb-1.5">حالة الاعتماد</label>
+                    <select id="status-select" class="w-full px-3 py-2.5 rounded-2xl bg-white border border-black/10 focus:outline-none text-sm font-medium cursor-pointer">
+                        <option value="all">الكل</option>
+                        <option value="معتمد">معتمد</option>
+                        <option value="قيد الاعتماد">قيد الاعتماد</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-black/5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div class="flex items-center gap-1.5 overflow-x-auto pb-1.5 lg:pb-0" id="year-pills"></div>
+                <div class="flex items-center gap-2.5 shrink-0 self-end lg:self-auto">
+                    <button onclick="resetFilters()" class="px-3.5 py-2 rounded-2xl text-xs font-semibold text-slate-700 bg-white hover:bg-rose-50 border transition flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-rotate-right"></i> إعادة ضبط
+                    </button>
+                    <div class="bg-black/5 p-1 rounded-2xl border flex items-center">
+                        <button id="btn-view-grouped" onclick="setViewMode('grouped')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#51465A] text-white shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-timeline"></i> حسب السنوات
+                        </button>
+                        <button id="btn-view-table" onclick="setViewMode('table')" class="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 transition flex items-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-table-list"></i> عرض جدولي
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Container -->
+        <section id="results-container" class="space-y-8"></section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#51465A] text-white/80 border-t border-amber-400/30 mt-12 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+            <div class="text-center sm:text-right">
+                <p class="font-bold text-white">All Rights Reserved 2026© | Hindobia</p>
+                <p class="text-white/70 mt-0.5">مدرسة الهيشة للطفولة المبكرة • الإدارة العامة للتعليم بمنطقة عسير | بيشة</p>
+            </div>
+            <span class="font-cinzel text-amber-300 text-base tracking-widest border border-white/20 px-4 py-1 rounded-2xl bg-white/5">Hindobia</span>
+        </div>
+    </footer>
+
+    <!-- Password Modal -->
+    <div id="passwordModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+        <div class="glass-card rounded-3xl shadow-xl max-w-md w-full p-6 sm:p-8 border">
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 bg-[#51465A]/10 text-[#51465A] rounded-2xl mx-auto flex items-center justify-center text-xl mb-3 border">
+                    <i class="fa-solid fa-key"></i>
+                </div>
+                <h3 class="text-lg font-bold">الرقم السري لوحة التحكم</h3>
+                <p class="text-xs opacity-75 mt-1">الرجاء إدخال الرقم السري للوصول إلى لوحة إدارة السجل التدريبي.</p>
+            </div>
+            
+            <form onsubmit="verifyPassword(event)" class="space-y-4">
+                <input type="password" id="adminPasswordInput" required placeholder="أدخل الرقم السري..." class="w-full px-4 py-3 rounded-2xl border focus:outline-none text-sm text-center tracking-widest bg-white">
+                <div id="passwordError" class="text-rose-600 text-xs text-center hidden font-medium">الرقم السري غير صحيح! يرجى المحاولة مرة أخرى.</div>
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="closePasswordModal()" class="flex-1 bg-slate-200/80 hover:bg-slate-200 py-2.5 rounded-2xl font-semibold text-xs transition">إلغاء</button>
+                    <button type="submit" class="flex-1 btn-primary py-2.5 rounded-2xl font-semibold text-xs transition shadow-md">دخول</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Control Panel Modal (Admin) -->
+    <div id="control-panel-modal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-950/60 backdrop-blur-sm no-print">
+        <div class="min-h-screen px-4 py-6 sm:p-6 flex items-center justify-center">
+            <div class="glass-card rounded-3xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[92vh]">
+                <div class="hero-header text-white px-6 py-4 flex items-center justify-between border-b-2 border-[#D6B779] shrink-0">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-2xl bg-white/10 border text-amber-300 flex items-center justify-center">
+                            <i class="fa-solid fa-sliders"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-base font-extrabold text-white">لوحة التحكم وإدارة السجل التدريبي</h2>
+                            <p class="text-[11px] text-white/70">إضافة دورة جديدة، تعديل، وحفظ التعديلات بالسيرفر</p>
+                        </div>
+                    </div>
+                    <button onclick="closeControlPanel()" class="w-9 h-9 rounded-2xl bg-white/10 hover:bg-rose-500 text-white flex items-center justify-center transition cursor-pointer">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+
+                <div class="p-5 sm:p-6 overflow-y-auto space-y-6">
+                    <!-- Add/Edit Form -->
+                    <div class="glass-card rounded-2xl p-5 border">
+                        <h3 id="cp-form-heading" class="text-sm font-extrabold mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-plus text-amber-600"></i> إضافة دورة أو نشاط تدريبي جديد
+                        </h3>
+                        <form id="cp-course-form" onsubmit="handleSaveCourse(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3">
+                            <input type="hidden" id="cp-course-id" value="">
+                            <div class="sm:col-span-2 lg:col-span-6">
+                                <label class="block text-xs font-bold mb-1">اسم النشاط التدريبي *</label>
+                                <input type="text" id="cp-title-input" required placeholder="مثال: تطبيقات الذكاء الاصطناعي" class="w-full px-3 py-2 rounded-xl bg-white border text-xs">
+                            </div>
+                            <div class="sm:col-span-2 lg:col-span-6">
+                                <label class="block text-xs font-bold mb-1">جهة النشاط *</label>
+                                <input type="text" id="cp-provider-input" required list="providers-list" placeholder="اختر أو اكتب الجهة المنفذة..." class="w-full px-3 py-2 rounded-xl bg-white border text-xs">
+                                <datalist id="providers-list">
+                                    <option value="وزارة التعليم">
+                                    <option value="المعهد الوطني للتطوير المهني التعليمي">
+                                    <option value="المركز الوطني للتطوير المهني التعليمي">
+                                    <option value="الإدارة العامة للتعليم بمنطقة عسير">
+                                    <option value="إدارة التعليم بمحافظة بيشة">
+                                    <option value="الجامعات السعودية">
+                                </datalist>
+                            </div>
+                            <div class="lg:col-span-3">
+                                <label class="block text-xs font-bold mb-1">تاريخ البداية *</label>
+                                <input type="text" id="cp-start-input" required placeholder="15/06/1448" oninput="autoExtractHijriYear(this.value)" class="w-full px-3 py-2 rounded-xl bg-white border text-xs text-center" dir="ltr">
+                            </div>
+                            <div class="lg:col-span-3">
+                                <label class="block text-xs font-bold mb-1">تاريخ النهاية *</label>
+                                <input type="text" id="cp-end-input" required placeholder="15/06/1448" class="w-full px-3 py-2 rounded-xl bg-white border text-xs text-center" dir="ltr">
+                            </div>
+                            <div class="lg:col-span-2">
+                                <label class="block text-xs font-bold mb-1">السنة *</label>
+                                <input type="number" id="cp-year-input" required placeholder="1448" class="w-full px-3 py-2 rounded-xl bg-white border text-xs text-center font-bold">
+                            </div>
+                            <div class="lg:col-span-2">
+                                <label class="block text-xs font-bold mb-1">الساعات *</label>
+                                <input type="number" id="cp-hours-input" required min="1" placeholder="5" class="w-full px-3 py-2 rounded-xl bg-white border text-xs text-center font-bold">
+                            </div>
+                            <div class="lg:col-span-2">
+                                <label class="block text-xs font-bold mb-1">الحالة</label>
+                                <select id="cp-status-input" class="w-full px-3 py-2 rounded-xl bg-white border text-xs font-medium">
+                                    <option value="معتمد">معتمد</option>
+                                    <option value="قيد الاعتماد">قيد الاعتماد</option>
+                                </select>
+                            </div>
+                            <div class="sm:col-span-2 lg:col-span-6">
+                                <label class="block text-xs font-bold mb-1">نوع النشاط (اكتب أو اختر)</label>
+                                <input type="text" id="cp-type-input" required list="types-list" placeholder="اختر أو اكتب نوع النشاط بحرية..." class="w-full px-3.5 py-2 rounded-xl bg-white border text-xs font-medium">
+                                <datalist id="types-list">
+                                    <option value="التدريب الإلكتروني">
+                                    <option value="التدريب المباشر">
+                                    <option value="ورش العمل">
+                                    <option value="الملتقيات - المؤتمرات">
+                                    <option value="دورة تدريبية">
+                                    <option value="لقاء تربوي">
+                                    <option value="مجتمع تعلم مهني">
+                                </datalist>
+                            </div>
+                            <div class="sm:col-span-2 lg:col-span-6 flex justify-end gap-2 items-end">
+                                <button type="button" id="cp-cancel-edit-btn" onclick="resetCourseForm()" class="hidden px-4 py-2 rounded-xl bg-slate-200 text-slate-700 text-xs font-bold">إلغاء</button>
+                                <button type="submit" id="cp-submit-btn" class="px-5 py-2 rounded-xl btn-primary text-xs font-bold shadow transition">حفظ في السجل</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Manage List -->
+                    <div class="glass-card rounded-2xl p-5 border space-y-3">
+                        <h3 class="text-sm font-extrabold flex items-center justify-between">
+                            <span>📋 الدورات المسجلة</span>
+                            <span id="cp-total-count" class="text-xs px-2.5 py-0.5 rounded-full bg-black/5">58</span>
+                        </h3>
+                        <div class="max-h-48 overflow-y-auto rounded-xl border bg-white">
+                            <table class="w-full text-right text-xs">
+                                <thead class="bg-slate-100 sticky top-0">
+                                    <tr>
+                                        <th class="py-2 px-3">اسم النشاط</th>
+                                        <th class="py-2 px-3 text-center">السنة</th>
+                                        <th class="py-2 px-3 text-center">الساعات</th>
+                                        <th class="py-2 px-3 text-center w-28">إجراء</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cp-courses-tbody" class="divide-y"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Change Password Section -->
+                    <div class="p-4 rounded-2xl border bg-black/5 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-sm font-bold">🔐 تغيير الرقم السري لوحة التحكم</h4>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="password" id="newAdminPassword" placeholder="أدخل الرقم السري الجديد..." class="flex-1 px-4 py-2 rounded-xl border text-xs bg-white">
+                            <button type="button" onclick="updateAdminPassword()" class="bg-[#51465A] hover:bg-[#3a3242] text-white px-4 py-2 rounded-xl text-xs font-semibold transition cursor-pointer">تحديث الرقم</button>
+                        </div>
+                        <!-- Visible Inline Confirmation Banner -->
+                        <div id="passStatusBanner" class="hidden p-3 rounded-xl text-xs font-bold text-center border transition-all"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Integration Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCiAHWHlkPDx3l2yVpqxH3jTVU-d6n1zfo",
+            authDomain: "hind-initiatives.firebaseapp.com",
+            databaseURL: "https://hind-initiatives-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "hind-initiatives",
+            storageBucket: "hind-initiatives.firebasestorage.app",
+            messagingSenderId: "480807246183",
+            appId: "1:480807246183:web:2c3c108863c37f064af7c2"
+        };
+
+        let db, auth;
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            signInAnonymously(auth);
+        } catch (e) {
+            console.error("Firebase init error:", e);
+        }
+
+        window.openPasswordModal = function() {
+            document.getElementById('passwordModal').classList.remove('hidden');
+            document.getElementById('adminPasswordInput').value = '';
+            document.getElementById('passwordError').classList.add('hidden');
+        };
+
+        window.closePasswordModal = function() {
+            document.getElementById('passwordModal').classList.add('hidden');
+        };
+
+        window.verifyPassword = async function(event) {
+            event.preventDefault();
+            const pass = document.getElementById('adminPasswordInput').value.trim();
+            
+            try {
+                const passDocRef = doc(db, 'settings', 'professional_password');
+                const passSnap = await getDoc(passDocRef);
+                const correctPass = passSnap.exists() ? passSnap.data().value : "1234";
+
+                if (pass === correctPass) {
+                    closePasswordModal();
+                    openControlPanelModal();
+                } else {
+                    document.getElementById('passwordError').classList.remove('hidden');
+                }
+            } catch (e) {
+                if (pass === "1234") {
+                    closePasswordModal();
+                    openControlPanelModal();
+                } else {
+                    document.getElementById('passwordError').classList.remove('hidden');
+                }
+            }
+        };
+
+        window.updateAdminPassword = async function() {
+            const newPass = document.getElementById('newAdminPassword').value.trim();
+            const banner = document.getElementById('passStatusBanner');
+
+            if (!newPass) {
+                banner.textContent = "⚠️ الرجاء إدخال الرقم السري الجديد أولاً.";
+                banner.className = "p-3 rounded-xl text-xs font-bold text-center border bg-amber-50 text-amber-800 border-amber-200 block";
+                showToast('الرجاء إدخال الرقم السري الجديد');
+                return;
+            }
+            try {
+                const passDocRef = doc(db, 'settings', 'professional_password');
+                await setDoc(passDocRef, { value: newPass });
+                document.getElementById('newAdminPassword').value = '';
+                
+                banner.innerHTML = `<i class="fa-solid fa-circle-check ml-1"></i> تم تحديث وحفظ الرقم السري الجديد بنجاح في السيرفر!`;
+                banner.className = "p-3 rounded-xl text-xs font-bold text-center border bg-emerald-50 text-emerald-800 border-emerald-200 block";
+                showToast('تم تحديث الرقم السري بنجاح!');
+            } catch (e) {
+                banner.textContent = "❌ حدث خطأ أثناء تحديث الرقم السري.";
+                banner.className = "p-3 rounded-xl text-xs font-bold text-center border bg-rose-50 text-rose-800 border-rose-200 block";
+                showToast('حدث خطأ أثناء تحديث الرقم السري.');
+            }
+        };
+    </script>
+
+    <!-- Main Dataset and Application Logic -->
+    <script>
+        const defaultCoursesData = [
+            { id: 1, title: "ورشة الالتزام", provider: "المركز الوطني للتطوير المهني التعليمي", startDate: "22/05/1448", endDate: "22/05/1448", year: 1448, type: "ورش العمل", hours: 2, status: "قيد الاعتماد" },
+            { id: 2, title: "ورشة إدارة الأداء الوظيفي في وزارة التعليم", provider: "المعهد الوطني للتطوير المهني التعليمي", startDate: "22/05/1448", endDate: "22/05/1448", year: 1448, type: "ورش العمل", hours: 2, status: "قيد الاعتماد" },
+            { id: 3, title: "ورشة عمل الثمان الأولى للإسعافات الأولية", provider: "المركز الوطني للتطوير المهني التعليمي", startDate: "21/05/1448", endDate: "21/05/1448", year: 1448, type: "ورش العمل", hours: 2, status: "قيد الاعتماد" },
+            { id: 4, title: "الذكاء الاصطناعي والابتكار", provider: "أخرى", startDate: "04/04/1448", endDate: "04/04/1448", year: 1448, type: "ورش العمل", hours: 1, status: "قيد الاعتماد" },
+            { id: 5, title: "مبادئ الذكاء الاصطناعي", provider: "أخرى", startDate: "18/03/1447", endDate: "18/03/1447", year: 1447, type: "التدريب الإلكتروني", hours: 5, status: "معتمد" },
+            { id: 6, title: "مفاهيم الذكاء الاصطناعي وتطبيقاته المتقدمة", provider: "أخرى", startDate: "18/03/1447", endDate: "18/03/1447", year: 1447, type: "ورش العمل", hours: 5, status: "معتمد" },
+            { id: 7, title: "ذكاء مسؤول : أخلاقيات استخدام الذكاء الاصطناعي في التعليم", provider: "الجامعات السعودية", startDate: "20/09/1446", endDate: "20/09/1446", year: 1446, type: "التدريب الإلكتروني", hours: 5, status: "معتمد" },
+            { id: 8, title: "كيف يعيد الذكاء الاصطناعي تشكيل العالم البرمجي", provider: "الجامعات السعودية", startDate: "19/09/1446", endDate: "19/09/1446", year: 1446, type: "التدريب الإلكتروني", hours: 5, status: "معتمد" },
+            { id: 9, title: "إدارة المهام في العصر الرقمي : الذكاء الاصطناعي كمساعد شخصي", provider: "الجامعات السعودية", startDate: "18/09/1446", endDate: "18/09/1446", year: 1446, type: "التدريب الإلكتروني", hours: 5, status: "معتمد" },
+            { id: 10, title: "صمم بذكاء : الإبداع في عصر الذكاء الاصطناعي", provider: "الجامعات السعودية", startDate: "17/09/1446", endDate: "17/09/1446", year: 1446, type: "التدريب الإلكتروني", hours: 5, status: "معتمد" },
+            { id: 11, title: "من الفكرة إلى العرض : استخدام AI في تقديم المحتوى", provider: "الجامعات السعودية", startDate: "16/09/1446", endDate: "16/09/1446", year: 1446, type: "التدريب الإلكتروني", hours: 5, status: "معتمد" },
+            { id: 12, title: "التعليم الذكي : كيف يعزز الذكاء الاصطناعي تجربتك الأكاديمية", provider: "الجامعات السعودية", startDate: "13/09/1446", endDate: "13/09/1446", year: 1446, type: "ورش العمل", hours: 5, status: "معتمد" },
+            { id: 13, title: "حياة أذكى مع الذكاء الاصطناعي : التعلم والتطور الذاتي", provider: "الجامعات السعودية", startDate: "12/09/1446", endDate: "12/09/1446", year: 1446, type: "التدريب الإلكتروني", hours: 5, status: "معتمد" },
+            { id: 14, title: "دليل المبدعين لاستغلال قوة الذكاء الاصطناعي", provider: "الجامعات السعودية", startDate: "11/09/1446", endDate: "11/09/1446", year: 1446, type: "ورش العمل", hours: 5, status: "معتمد" },
+            { id: 15, title: "إنترنت أذكى لعالم أكثر تطورًا", provider: "الجامعات السعودية", startDate: "10/09/1446", endDate: "10/09/1446", year: 1446, type: "التدريب الإلكتروني", hours: 5, status: "معتمد" },
+            { id: 16, title: "الذكاء الاصطناعي نافذتك للمستقبل", provider: "الجامعات السعودية", startDate: "09/09/1446", endDate: "09/09/1446", year: 1446, type: "التدريب الإلكتروني", hours: 5, status: "معتمد" },
+            { id: 17, title: "إدارة الأداء الوظيفي للمعلمين", provider: "وزارة التعليم", startDate: "30/06/1446", endDate: "30/06/1446", year: 1446, type: "التدريب الإلكتروني", hours: 2, status: "معتمد" },
+            { id: 18, title: "الأمن السيبراني", provider: "وزارة التعليم", startDate: "29/06/1446", endDate: "29/06/1446", year: 1446, type: "التدريب الإلكتروني", hours: 2, status: "معتمد" },
+            { id: 19, title: "سياسات حوكمة البيانات", provider: "وزارة التعليم", startDate: "29/06/1446", endDate: "29/06/1446", year: 1446, type: "التدريب الإلكتروني", hours: 2, status: "معتمد" },
+            { id: 20, title: "إدارة المخاطر", provider: "وزارة التعليم", startDate: "29/06/1446", endDate: "29/06/1446", year: 1446, type: "التدريب الإلكتروني", hours: 2, status: "معتمد" },
+            { id: 21, title: "صناعة الاعتزاز بالقيم الإسلامية والهوية الوطنية", provider: "إدارة التعليم بمحافظة بيشة", startDate: "18/06/1446", endDate: "18/06/1446", year: 1446, type: "التدريب المباشر", hours: 4, status: "معتمد" },
+            { id: 22, title: "التقويم من أجل التعلم في مرحلة الطفولة المبكرة", provider: "المعهد الوطني للتطوير المهني التعليمي", startDate: "06/02/1446", endDate: "06/02/1446", year: 1446, type: "التدريب الإلكتروني", hours: 6, status: "معتمد" },
+            { id: 23, title: "خصائص النمو لطلاب للمرحلة الابتدائية وتطبيقاتها", provider: "المعهد الوطني للتطوير المهني التعليمي", startDate: "05/02/1446", endDate: "05/02/1446", year: 1446, type: "التدريب الإلكتروني", hours: 7, status: "معتمد" },
+            { id: 24, title: "التعلم بالاستقصاء في مرحلة الطفولة المبكرة", provider: "المعهد الوطني للتطوير المهني التعليمي", startDate: "04/02/1446", endDate: "04/02/1446", year: 1446, type: "التدريب الإلكتروني", hours: 8, status: "معتمد" },
+            { id: 25, title: "ساعة برمجة", provider: "وزارة التعليم", startDate: "12/06/1445", endDate: "12/06/1445", year: 1445, type: "التدريب الإلكتروني", hours: 2, status: "معتمد" },
+            { id: 26, title: "خصائص النمو", provider: "إدارة التعليم بمحافظة بيشة", startDate: "17/04/1445", endDate: "17/04/1445", year: 1445, type: "التدريب الإلكتروني", hours: 5, status: "معتمد" },
+            { id: 27, title: "اللقاء التعريفي بأولمبياد أذكى ودور معلمة الحاسب الآلي فيه", provider: "إدارة التعليم بمحافظة بيشة", startDate: "09/04/1445", endDate: "09/04/1445", year: 1445, type: "التدريب الإلكتروني", hours: 4, status: "معتمد" },
+            { id: 28, title: "التعليم المتمايز", provider: "إدارة التعليم بمحافظة بيشة", startDate: "09/04/1445", endDate: "10/04/1445", year: 1445, type: "التدريب الإلكتروني", hours: 8, status: "معتمد" },
+            { id: 29, title: "القيم وعلاقتها بالتعليم", provider: "إدارة التعليم بمحافظة بيشة", startDate: "02/04/1445", endDate: "02/04/1445", year: 1445, type: "التدريب الإلكتروني", hours: 3, status: "معتمد" },
+            { id: 30, title: "الاحتراق الوظيفي وتأثيره على الصحة النفسية في بيئة العمل", provider: "إدارة التعليم بمحافظة بيشة", startDate: "01/04/1445", endDate: "01/04/1445", year: 1445, type: "التدريب الإلكتروني", hours: 4, status: "معتمد" },
+            { id: 31, title: "مقياس هيرمان لأنماط التفكير", provider: "إدارة التعليم بمحافظة بيشة", startDate: "24/03/1445", endDate: "25/03/1445", year: 1445, type: "التدريب الإلكتروني", hours: 8, status: "معتمد" },
+            { id: 32, title: "التحصيل الدراسي لمعلمات الدراسات الإسلامية", provider: "إدارة التعليم بمحافظة بيشة", startDate: "10/03/1444", endDate: "10/03/1444", year: 1444, type: "التدريب الإلكتروني", hours: 4, status: "معتمد" },
+            { id: 33, title: "ملتقى الأمن والسلامة الرابع", provider: "إدارة التعليم بمحافظة بيشة", startDate: "10/08/1442", endDate: "10/08/1442", year: 1442, type: "التدريب الإلكتروني", hours: 4, status: "معتمد" },
+            { id: 34, title: "المشروع الوزاري تطوير الأداء المهني لمعلمات الدراسات الإسلامية", provider: "إدارة التعليم بمحافظة بيشة", startDate: "10/07/1442", endDate: "10/07/1442", year: 1442, type: "التدريب الإلكتروني", hours: 5, status: "معتمد" },
+            { id: 35, title: "ملتقى تطوير الإلكتروني الأول", provider: "إدارة التعليم بمحافظة الطائف", startDate: "29/03/1442", endDate: "04/04/1442", year: 1442, type: "التدريب الإلكتروني", hours: 25, status: "معتمد" },
+            { id: 36, title: "استراتيجيات الفهم القرائي", provider: "إدارة التعليم بمحافظة بيشة", startDate: "08/06/1441", endDate: "08/06/1441", year: 1441, type: "التدريب المباشر", hours: 5, status: "معتمد" },
+            { id: 37, title: "الإرشاد وقت الأزمات", provider: "إدارة التعليم بمحافظة بيشة", startDate: "13/02/1440", endDate: "13/02/1440", year: 1440, type: "التدريب المباشر", hours: 5, status: "معتمد" },
+            { id: 38, title: "الدليل الإرشادي للسلوك الإيجابي", provider: "إدارة التعليم بمحافظة بيشة", startDate: "12/02/1440", endDate: "12/02/1440", year: 1440, type: "التدريب المباشر", hours: 5, status: "معتمد" },
+            { id: 39, title: "الكوتشينج التربوي", provider: "إدارة التعليم بمحافظة بيشة", startDate: "01/02/1440", endDate: "02/02/1440", year: 1440, type: "التدريب المباشر", hours: 10, status: "معتمد" },
+            { id: 40, title: "التعليم المتمايز وبطاقة التعلم النشط", provider: "إدارة التعليم بمحافظة بيشة", startDate: "17/01/1440", endDate: "17/01/1440", year: 1440, type: "التدريب المباشر", hours: 5, status: "معتمد" },
+            { id: 41, title: "اللقاء الإرشادي الأول لمرشدات الطالبات", provider: "إدارة التعليم بمحافظة بيشة", startDate: "15/01/1440", endDate: "15/01/1440", year: 1440, type: "التدريب المباشر", hours: 5, status: "معتمد" },
+            { id: 42, title: "التقويم وخرائط المفاهيم", provider: "إدارة التعليم بمحافظة بيشة", startDate: "19/12/1439", endDate: "19/12/1439", year: 1439, type: "التدريب المباشر", hours: 5, status: "معتمد" },
+            { id: 43, title: "مشروع المدارس المعززة للسلوك الإيجابي", provider: "إدارة التعليم بمحافظة بيشة", startDate: "21/01/1439", endDate: "22/01/1439", year: 1439, type: "التدريب المباشر", hours: 10, status: "معتمد" },
+            { id: 44, title: "صعوبات التعلم", provider: "إدارة التعليم بمحافظة بيشة", startDate: "27/06/1438", endDate: "29/06/1438", year: 1438, type: "ورش العمل", hours: 15, status: "معتمد" },
+            { id: 45, title: "تحصين الفكر وتأصيل القيم مسؤولية الجميع", provider: "إدارة التعليم بمحافظة بيشة", startDate: "30/03/1438", endDate: "30/03/1438", year: 1438, type: "الملتقيات - المؤتمرات", hours: 5, status: "معتمد" },
+            { id: 46, title: "استراتيجيات التعلم النشط", provider: "إدارة التعليم بمحافظة بيشة", startDate: "16/01/1438", endDate: "16/01/1438", year: 1438, type: "التدريب المباشر", hours: 5, status: "معتمد" },
+            { id: 47, title: "الضعف الإملائي مظاهره وأسبابه وعلاجه", provider: "إدارة التعليم بمحافظة بيشة", startDate: "14/04/1436", endDate: "14/04/1436", year: 1436, type: "التدريب المباشر", hours: 3, status: "معتمد" },
+            { id: 48, title: "مهارات التفكير العليا (الكورت)", provider: "إدارة التعليم بمحافظة بيشة", startDate: "08/03/1436", endDate: "08/03/1436", year: 1436, type: "التدريب المباشر", hours: 2, status: "معتمد" },
+            { id: 49, title: "تذليل التكنولوجيا لخدمة التعليم", provider: "إدارة التعليم بمحافظة بيشة", startDate: "08/03/1436", endDate: "08/03/1436", year: 1436, type: "التدريب المباشر", hours: 3, status: "معتمد" },
+            { id: 50, title: "تدريس القرآن وفق الاستراتيجيات", provider: "إدارة التعليم بمحافظة بيشة", startDate: "20/01/1436", endDate: "20/01/1436", year: 1436, type: "التدريب المباشر", hours: 5, status: "معتمد" },
+            { id: 51, title: "بنود الأداء الوظيفي للمعلمات والإداريات", provider: "إدارة التعليم بمحافظة بيشة", startDate: "03/01/1436", endDate: "03/01/1436", year: 1436, type: "التدريب المباشر", hours: 3, status: "معتمد" },
+            { id: 52, title: "الاستراتيجيات الحديثة للتعليم وادوات التقويم", provider: "إدارة التعليم بمحافظة بيشة", startDate: "19/04/1435", endDate: "19/04/1435", year: 1435, type: "ورش العمل", hours: 5, status: "معتمد" },
+            { id: 53, title: "علاج الضعف لدى الطالبات وتنمية الطموح", provider: "إدارة التعليم بمحافظة بيشة", startDate: "05/04/1435", endDate: "05/04/1435", year: 1435, type: "ورش العمل", hours: 5, status: "معتمد" },
+            { id: 54, title: "التدريس الفاعل للصفوف الأولية (المستوى الثالث)", provider: "إدارة التعليم بمحافظة بيشة", startDate: "02/11/1434", endDate: "05/11/1434", year: 1434, type: "التدريب المباشر", hours: 20, status: "معتمد" },
+            { id: 55, title: "اجتماع الصفوف الأولية", provider: "إدارة التعليم بمحافظة بيشة", startDate: "29/10/1434", endDate: "29/10/1434", year: 1434, type: "ورش العمل", hours: 5, status: "معتمد" },
+            { id: 56, title: "التطوير المهني لمعلمات المشروع الشامل لتطوير مناهج الصفوف الأولية", provider: "إدارة التعليم بمحافظة بيشة", startDate: "04/01/1434", endDate: "07/01/1434", year: 1434, type: "التدريب المباشر", hours: 20, status: "معتمد" },
+            { id: 57, title: "مهارات التفكير في دروس التربية الإسلامية", provider: "إدارة التعليم بمحافظة بيشة", startDate: "17/05/1433", endDate: "18/05/1433", year: 1433, type: "التدريب المباشر", hours: 10, status: "معتمد" },
+            { id: 58, title: "المشروع الشامل لتطوير العلوم الشرعية", provider: "إدارة التعليم بمحافظة بيشة", startDate: "04/11/1432", endDate: "07/11/1432", year: 1432, type: "التدريب المباشر", hours: 20, status: "معتمد" }
+        ];
+
+        const STORAGE_KEY = 'hindobia_training_courses_v1';
+        let coursesData = loadCoursesData();
+
+        function loadCoursesData() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                }
+            } catch (e) {}
+            return JSON.parse(JSON.stringify(defaultCoursesData));
+        }
+
+        function saveCoursesData() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(coursesData));
+            } catch (e) {}
+        }
+
+        const state = { search: '', year: 'all', type: 'all', status: 'all', viewMode: 'grouped' };
+        let uniqueYears = [...new Set(coursesData.map(c => c.year))].sort((a, b) => b - a);
+        let uniqueTypes = [...new Set(coursesData.map(c => c.type))];
+
+        function init() {
+            populateFilterControls();
+            renderChart();
+            bindEvents();
+            render();
+        }
+
+        function populateFilterControls() {
+            const yearSelect = document.getElementById('year-select');
+            yearSelect.innerHTML = '<option value="all">جميع السنوات</option>';
+            uniqueYears.forEach(yr => {
+                const count = coursesData.filter(c => c.year === yr).length;
+                const opt = document.createElement('option');
+                opt.value = yr;
+                opt.textContent = `${yr} هـ (${count})`;
+                yearSelect.appendChild(opt);
+            });
+
+            const typeSelect = document.getElementById('type-select');
+            typeSelect.innerHTML = '<option value="all">جميع الأنواع</option>';
+            uniqueTypes.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t;
+                opt.textContent = t;
+                typeSelect.appendChild(opt);
+            });
+
+            renderYearPills();
+        }
+
+        function renderYearPills() {
+            let html = `<button onclick="setYearFilter('all')" class="px-3.5 py-1.5 rounded-2xl text-xs font-bold whitespace-nowrap transition cursor-pointer ${state.year === 'all' ? 'bg-[#51465A] text-white shadow-sm' : 'bg-white text-slate-700 border'}">الكل (${coursesData.length})</button>`;
+            uniqueYears.forEach(yr => {
+                const isActive = String(state.year) === String(yr);
+                html += `<button onclick="setYearFilter('${yr}')" class="px-3.5 py-1.5 rounded-2xl text-xs font-bold whitespace-nowrap transition cursor-pointer ${isActive ? 'bg-[#51465A] text-white shadow-sm' : 'bg-white text-slate-700 border'}">${yr} هـ</button>`;
+            });
+            document.getElementById('year-pills').innerHTML = html;
+        }
+
+        function renderChart() {
+            const yearsAsc = [...uniqueYears].sort((a, b) => a - b);
+            const maxHours = Math.max(...yearsAsc.map(yr => coursesData.filter(c => c.year === yr).reduce((s, i) => s + i.hours, 0)));
+
+            document.getElementById('yearly-chart').innerHTML = yearsAsc.map(yr => {
+                const items = coursesData.filter(c => c.year === yr);
+                const hours = items.reduce((s, i) => s + i.hours, 0);
+                const heightPct = Math.max(12, Math.round((hours / maxHours) * 100));
+                const isSelected = String(state.year) === String(yr);
+
+                return `
+                    <button onclick="toggleChartYear('${yr}')" class="flex-1 flex flex-col items-center justify-end h-full group cursor-pointer focus:outline-none">
+                        <span class="text-[11px] font-bold mb-1.5 ${isSelected ? 'text-amber-600' : 'text-slate-600'}">${hours}س</span>
+                        <div class="w-full max-w-[34px] rounded-t-xl transition-all ${isSelected ? 'bg-amber-500 ring-2 ring-amber-300' : 'bg-[#51465A] hover:bg-[#3a3242]'}" style="height: ${heightPct}%"></div>
+                        <span class="text-[11px] font-bold mt-2 ${isSelected ? 'text-[#51465A] underline' : 'text-slate-500'}">${yr}</span>
+                    </button>
+                `;
+            }).join('');
+
+            const clearChartBtn = document.getElementById('clear-chart-filter');
+            if (state.year !== 'all') clearChartBtn.classList.remove('hidden');
+            else clearChartBtn.classList.add('hidden');
+        }
+
+        function bindEvents() {
+            document.getElementById('search-input').addEventListener('input', (e) => {
+                state.search = e.target.value.trim();
+                document.getElementById('clear-search').classList.toggle('hidden', state.search === '');
+                render();
+            });
+            document.getElementById('year-select').addEventListener('change', (e) => setYearFilter(e.target.value));
+            document.getElementById('type-select').addEventListener('change', (e) => { state.type = e.target.value; render(); });
+            document.getElementById('status-select').addEventListener('change', (e) => { state.status = e.target.value; render(); });
+        }
+
+        function setYearFilter(yr) {
+            state.year = yr;
+            document.getElementById('year-select').value = yr;
+            renderYearPills();
+            renderChart();
+            render();
+        }
+
+        function toggleChartYear(yr) {
+            setYearFilter(String(state.year) === String(yr) ? 'all' : yr);
+        }
+
+        function clearSearch() {
+            document.getElementById('search-input').value = '';
+            state.search = '';
+            document.getElementById('clear-search').classList.add('hidden');
+            render();
+        }
+
+        function resetFilters() {
+            state.search = ''; state.year = 'all'; state.type = 'all'; state.status = 'all';
+            document.getElementById('search-input').value = '';
+            document.getElementById('year-select').value = 'all';
+            document.getElementById('type-select').value = 'all';
+            document.getElementById('status-select').value = 'all';
+            document.getElementById('clear-search').classList.add('hidden');
+            renderYearPills(); renderChart(); render();
+            showToast('تمت إعادة ضبط الفلاتر');
+        }
+
+        function setViewMode(mode) {
+            state.viewMode = mode;
+            const btnGrouped = document.getElementById('btn-view-grouped');
+            const btnTable = document.getElementById('btn-view-table');
+            if (mode === 'grouped') {
+                btnGrouped.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-[#51465A] text-white shadow-sm transition flex items-center gap-1.5 cursor-pointer';
+                btnTable.className = 'px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 transition flex items-center gap-1.5 cursor-pointer';
+            } else {
+                btnTable.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-[#51465A] text-white shadow-sm transition flex items-center gap-1.5 cursor-pointer';
+                btnGrouped.className = 'px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 transition flex items-center gap-1.5 cursor-pointer';
+            }
+            render();
+        }
+
+        function getFilteredCourses() {
+            return coursesData.filter(course => {
+                const matchesYear = state.year === 'all' || String(course.year) === String(state.year);
+                const matchesType = state.type === 'all' || course.type === state.type;
+                const matchesStatus = state.status === 'all' || course.status === state.status;
+                const matchesSearch = !state.search || course.title.toLowerCase().includes(state.search.toLowerCase()) || course.provider.toLowerCase().includes(state.search.toLowerCase());
+                return matchesYear && matchesType && matchesStatus && matchesSearch;
+            });
+        }
+
+        function getTypeBadge(type) {
+            return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-bold border bg-white/60">${type}</span>`;
+        }
+
+        function getStatusBadge(status) {
+            if (status === 'معتمد') {
+                return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">معتمد</span>`;
+            }
+            return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">قيد الاعتماد</span>`;
+        }
+
+        function render() {
+            const filtered = getFilteredCourses();
+            const totalHours = filtered.reduce((s, c) => s + c.hours, 0);
+
+            document.getElementById('kpi-courses').textContent = filtered.length;
+            document.getElementById('kpi-hours').textContent = totalHours;
+            document.getElementById('kpi-approved').textContent = filtered.filter(c => c.status === 'معتمد').length;
+            document.getElementById('kpi-years').textContent = new Set(filtered.map(c => c.year)).size;
+
+            const container = document.getElementById('results-container');
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="glass-card rounded-3xl p-12 text-center"><p class="text-sm font-bold">لا توجد دورات مطابقة لخيارات البحث</p></div>`;
+                return;
+            }
+
+            if (state.viewMode === 'grouped') {
+                const grouped = {};
+                filtered.forEach(item => {
+                    if (!grouped[item.year]) grouped[item.year] = [];
+                    grouped[item.year].push(item);
+                });
+
+                container.innerHTML = Object.keys(grouped).map(Number).sort((a, b) => b - a).map(yr => {
+                    const items = grouped[yr];
+                    const yrHours = items.reduce((s, i) => s + i.hours, 0);
+
+                    return `
+                        <div class="space-y-4">
+                            <div class="hero-header text-white px-5 py-3.5 rounded-3xl shadow flex justify-between items-center border-r-4 border-amber-300">
+                                <h3 class="text-base font-extrabold">العام التدريبي ${yr} هـ</h3>
+                                <div class="flex gap-2 text-xs font-bold">
+                                    <span class="px-3 py-1 rounded-xl bg-white/10">${items.length} دورات</span>
+                                    <span class="px-3 py-1 rounded-xl btn-primary">${yrHours} ساعة</span>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                ${items.map(course => `
+                                    <article class="course-card glass-card rounded-3xl p-5 flex flex-col justify-between gap-4">
+                                        <div>
+                                            <div class="flex items-start justify-between gap-2 mb-3">
+                                                ${getTypeBadge(course.type)}
+                                                ${getStatusBadge(course.status)}
+                                            </div>
+                                            <h4 class="font-bold text-sm mb-2">${course.title}</h4>
+                                            <p class="text-xs opacity-75">${course.provider}</p>
+                                        </div>
+                                        <div class="pt-3 border-t border-black/5 flex justify-between text-xs opacity-75">
+                                            <span>${course.startDate} هـ</span>
+                                            <span class="font-bold">${course.hours} ساعة</span>
+                                        </div>
+                                    </article>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                container.innerHTML = `
+                    <div class="glass-card rounded-3xl overflow-hidden">
+                        <table class="w-full text-right text-xs">
+                            <thead class="bg-[#51465A] text-white">
+                                <tr>
+                                    <th class="py-3 px-4">#</th>
+                                    <th class="py-3 px-4">اسم الدورة</th>
+                                    <th class="py-3 px-4">الجهة</th>
+                                    <th class="py-3 px-4 text-center">السنة</th>
+                                    <th class="py-3 px-4 text-center">الساعات</th>
+                                    <th class="py-3 px-4 text-center">الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                ${filtered.map((c, i) => `
+                                    <tr class="hover:bg-white/50">
+                                        <td class="py-3 px-4 font-bold opacity-50">${i+1}</td>
+                                        <td class="py-3 px-4 font-bold">${c.title}</td>
+                                        <td class="py-3 px-4 opacity-75">${c.provider}</td>
+                                        <td class="py-3 px-4 text-center font-bold">${c.year} هـ</td>
+                                        <td class="py-3 px-4 text-center font-bold">${c.hours}</td>
+                                        <td class="py-3 px-4 text-center">${getStatusBadge(c.status)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+        }
+
+        // Control Panel Functions
+        function openControlPanelModal() {
+            resetCourseForm();
+            renderControlPanelList();
+            document.getElementById('passStatusBanner').classList.add('hidden');
+            document.getElementById('control-panel-modal').classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function closeControlPanel() {
+            document.getElementById('control-panel-modal').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        function autoExtractHijriYear(val) {
+            const match = val.trim().match(/(\d{4})$/);
+            if (match) document.getElementById('cp-year-input').value = match[1];
+        }
+
+        function handleSaveCourse(e) {
+            e.preventDefault();
+            const id = document.getElementById('cp-course-id').value;
+            const title = document.getElementById('cp-title-input').value.trim();
+            const provider = document.getElementById('cp-provider-input').value.trim();
+            const startDate = document.getElementById('cp-start-input').value.trim();
+            const endDate = document.getElementById('cp-end-input').value.trim();
+            const year = parseInt(document.getElementById('cp-year-input').value, 10);
+            const hours = parseFloat(document.getElementById('cp-hours-input').value);
+            const type = document.getElementById('cp-type-input').value.trim() || 'دورة تدريبية';
+            const status = document.getElementById('cp-status-input').value;
+
+            if (id) {
+                const idx = coursesData.findIndex(c => c.id === Number(id));
+                if (idx !== -1) coursesData[idx] = { id: Number(id), title, provider, startDate, endDate, year, type, hours, status };
+                showToast('تم تحديث الدورة بنجاح');
+            } else {
+                const nextId = coursesData.length > 0 ? Math.max(...coursesData.map(c => c.id)) + 1 : 1;
+                coursesData.unshift({ id: nextId, title, provider, startDate, endDate, year, type, hours, status });
+                showToast('تمت إضافة الدورة بنجاح');
+            }
+
+            saveCoursesData();
+            resetCourseForm();
+            refreshAllViews();
+        }
+
+        function startEditCourse(id) {
+            const c = coursesData.find(item => item.id === id);
+            if (!c) return;
+            document.getElementById('cp-course-id').value = c.id;
+            document.getElementById('cp-title-input').value = c.title;
+            document.getElementById('cp-provider-input').value = c.provider;
+            document.getElementById('cp-start-input').value = c.startDate;
+            document.getElementById('cp-end-input').value = c.endDate;
+            document.getElementById('cp-year-input').value = c.year;
+            document.getElementById('cp-hours-input').value = c.hours;
+            document.getElementById('cp-type-input').value = c.type;
+            document.getElementById('cp-status-input').value = c.status;
+            document.getElementById('cp-cancel-edit-btn').classList.remove('hidden');
+        }
+
+        function resetCourseForm() {
+            document.getElementById('cp-course-form').reset();
+            document.getElementById('cp-course-id').value = '';
+            document.getElementById('cp-cancel-edit-btn').classList.add('hidden');
+        }
+
+        function deleteCourse(id) {
+            coursesData = coursesData.filter(c => c.id !== id);
+            saveCoursesData();
+            refreshAllViews();
+            showToast('تم حذف الدورة بنجاح');
+        }
+
+        function renderControlPanelList() {
+            const tbody = document.getElementById('cp-courses-tbody');
+            document.getElementById('cp-total-count').textContent = `${coursesData.length} دورة`;
+            tbody.innerHTML = coursesData.map(c => `
+                <tr class="hover:bg-slate-50">
+                    <td class="py-2 px-3 font-bold">${c.title}</td>
+                    <td class="py-2 px-3 text-center">${c.year} هـ</td>
+                    <td class="py-2 px-3 text-center">${c.hours}</td>
+                    <td class="py-2 px-3 text-center flex justify-center gap-1">
+                        <button onclick="startEditCourse(${c.id})" class="px-2 py-1 bg-amber-100 text-amber-800 rounded text-[10px]">تعديل</button>
+                        <button onclick="deleteCourse(${c.id})" class="px-2 py-1 bg-rose-100 text-rose-800 rounded text-[10px]">حذف</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function refreshAllViews() {
+            uniqueYears = [...new Set(coursesData.map(c => c.year))].sort((a, b) => b - a);
+            uniqueTypes = [...new Set(coursesData.map(c => c.type))];
+            populateFilterControls();
+            renderChart();
+            render();
+            renderControlPanelList();
+        }
+
+        function printReport() { window.print(); }
+
+        // Export Real Excel Workbook (.xlsx)
+        function exportToExcel() {
+            const filtered = getFilteredCourses();
+            if (filtered.length === 0) {
+                showToast('لا توجد بيانات للتصدير');
+                return;
+            }
+
+            const totalHours = filtered.reduce((sum, c) => sum + c.hours, 0);
+
+            // Prepare Worksheet Data
+            const rows = filtered.map((c, index) => ({
+                'م': index + 1,
+                'اسم الدورة / البرنامج التدريبي': c.title,
+                'الجهة المنفذة': c.provider,
+                'السنة الهجرية': c.year,
+                'تاريخ البداية': c.startDate,
+                'تاريخ النهاية': c.endDate,
+                'نوع النشاط': c.type,
+                'عدد الساعات': c.hours,
+                'حالة الاعتماد': c.status
+            }));
+
+            // Add Summary Total Row at bottom
+            rows.push({
+                'م': '',
+                'اسم الدورة / البرنامج التدريبي': 'الإجمالي العام',
+                'الجهة المنفذة': '',
+                'السنة الهجرية': '',
+                'تاريخ البداية': '',
+                'تاريخ النهاية': '',
+                'نوع النشاط': `${filtered.length} برنامج تدريبي`,
+                'عدد الساعات': totalHours,
+                'حالة الاعتماد': ''
+            });
+
+            const worksheet = XLSX.utils.json_to_sheet(rows);
+            
+            // Set Right-to-Left (RTL) Sheet view
+            worksheet['!views'] = [{ rightToLeft: true }];
+
+            // Column Widths
+            worksheet['!cols'] = [
+                { wch: 6 },  // م
+                { wch: 45 }, // اسم الدورة
+                { wch: 35 }, // الجهة
+                { wch: 15 }, // السنة
+                { wch: 15 }, // البداية
+                { wch: 15 }, // النهاية
+                { wch: 22 }, // النوع
+                { wch: 14 }, // الساعات
+                { wch: 16 }  // الحالة
+            ];
+
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "سجل التطوير المهني");
+
+            const suffix = state.year !== 'all' ? `_${state.year}` : '_الشامل';
+            XLSX.writeFile(workbook, `سجل_التطوير_المهني_أ_هند_القرني${suffix}.xlsx`);
+
+            showToast(`تم تصدير جدول Excel (.xlsx) بنجاح (${filtered.length} دورة)`);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = msg;
+            toast.classList.remove('-translate-y-24', 'opacity-0');
+            setTimeout(() => toast.classList.add('-translate-y-24', 'opacity-0'), 3500);
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
