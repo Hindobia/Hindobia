@@ -311,7 +311,7 @@
                 <div class="sm:col-span-2 md:col-span-5 relative">
                     <label class="block text-xs font-bold mb-1.5">بحث في السجل التدريبي</label>
                     <div class="relative">
-                        <input type="search" id="search-input" placeholder="ابحثي باسم الدورة، الجهة، أو المجال..." 
+                        <input type="search" id="search-input" placeholder="ابحثي باسم الدورة، الجهة، أو المجال..." autocomplete="off" name="training_search_box" readonly onfocus="this.removeAttribute('readonly');"
                             class="w-full pl-10 pr-10 py-2.5 rounded-2xl bg-white border border-black/10 focus:outline-none focus:ring-2 text-sm transition" autocomplete="new-password" name="course_filter_query">
                         <i class="fa-solid fa-magnifying-glass absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
                         <button id="clear-search" onclick="clearSearch()" class="hidden absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-rose-500 text-sm cursor-pointer">
